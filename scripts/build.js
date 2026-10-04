@@ -5,12 +5,16 @@
 const fs = require("fs");
 const path = require("path");
 
-const url = (process.env.SUPABASE_URL || "").trim();
-const key = (process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || "").trim();
+let url = (process.env.SUPABASE_URL || "").trim().replace(/^["']|["']$/g, "").replace(/\/+$/, "");
+const key = (process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || "").trim().replace(/^["']|["']$/g, "");
 
 const missing = [];
-if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url)) missing.push("SUPABASE_URL (like https://abcd.supabase.co)");
-if (!key) missing.push("SUPABASE_ANON_KEY");
+if (!url) {
+  missing.push("SUPABASE_URL (not set)");
+} else if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url) && !/^https:\/\/[a-z0-9.-]+/i.test(url)) {
+  missing.push(`SUPABASE_URL must be a valid https URL like https://abcd.supabase.co (received "${url}")`);
+}
+if (!key) missing.push("SUPABASE_ANON_KEY (not set)");
 if (missing.length) {
   console.error(`Build stopped. Set these environment variables: ${missing.join(", ")}`);
   process.exit(1);

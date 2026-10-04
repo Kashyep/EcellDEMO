@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>E-Cell SMVIT</title>
+<meta name="description" content="E-Cell SMVIT, the entrepreneurship cell at Sir M. Visvesvaraya Institute of Technology, Bengaluru.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect x=%221%22 y=%221%22 width=%2230%22 height=%2230%22 rx=%226%22 fill=%22%23131a2b%22/%3E%3Cpath d=%22M9 9h12M9 16h9M9 23h12M9 9v14%22 stroke=%22%23fff%22 stroke-width=%223%22 stroke-linecap=%22round%22 fill=%22none%22/%3E%3Cpath d=%22M21 16l4-6%22 stroke=%22%23f2b705%22 stroke-width=%223%22 stroke-linecap=%22round%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 32 32">
+    <rect x="1" y="1" width="30" height="30" rx="6" fill="currentColor"/>
+    <path d="M9 9h12M9 16h9M9 23h12M9 9v14" stroke="var(--bg)" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M21 16l4-6" stroke="var(--mark)" stroke-width="3" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="E-Cell SMVIT home">
+      <svg class="brand__mark"><use href="#logo"/></svg>
+      <span>E-CELL SMVIT</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <div class="nav__links">
+        <a href="#about">About</a>
+        <a href="#programs">Programs</a>
+        <a href="#team">Team</a>
+      </div>
+      <a href="login.html" data-guest>Log in</a>
+      <a class="btn btn--primary" href="signup.html" data-guest>Join E-Cell</a>
+      <a class="btn btn--primary" href="dashboard.html" data-member hidden>Dashboard</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <!-- ===== Hero ===== -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div class="hero__copy">
+        <span class="label">Entrepreneurship Cell · SMVIT, Bengaluru</span>
+        <h1 id="hero-title">Ideas don't wait for <span class="mark">graduation.</span></h1>
+        <p class="hero__lede">We help SMVIT students take a hunch to a pitch, with mentors, competitions and a team that ships.</p>
+        <div class="hero__ctas">
+          <a class="btn btn--primary" href="signup.html">Join E-Cell <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn" href="#programs">See what we run</a>
+        </div>
+        <div class="hero__meta">
+          <span class="label">Est. 2021</span>
+          <span class="label">NEC · IIT Bombay &amp; IIT Madras</span>
+        </div>
+      </div>
+
+      <figure class="chart" aria-labelledby="chart-cap-title" style="margin:0">
+        <div class="chart__head">
+          <span class="label">The venture curve</span>
+          <span class="label">4-year runway</span>
+        </div>
+        <svg id="curve" viewBox="0 0 600 340" role="img" aria-label="A startup growth curve, flat during the idea stage and rising steeply towards launch.">
+          <g class="axis">
+            <path d="M40 300H580M40 20V300"/>
+          </g>
+          <g class="tick">
+            <text x="40" y="324">Y1</text>
+            <text x="175" y="324">Y2</text>
+            <text x="310" y="324">Y3</text>
+            <text x="445" y="324">Y4</text>
+            <text x="34" y="30" text-anchor="end" transform="rotate(-90 28 30)">TRACTION</text>
+          </g>
+          <path class="area" d="M50 290 C220 290 300 280 370 236 S520 86 572 40 L572 300 L50 300 Z"/>
+          <path class="curve" id="curve-path" d="M50 290 C220 290 300 280 370 236 S520 86 572 40"/>
+          <g id="curve-dots"></g>
+        </svg>
+        <ul class="stages" id="stages" aria-label="Stages">
+          <li><button class="stage" type="button" data-i="0" aria-pressed="true">Idea</button></li>
+          <li><button class="stage" type="button" data-i="1" aria-pressed="false">Validate</button></li>
+          <li><button class="stage" type="button" data-i="2" aria-pressed="false">Build</button></li>
+          <li><button class="stage" type="button" data-i="3" aria-pressed="false">Pitch</button></li>
+          <li><button class="stage" type="button" data-i="4" aria-pressed="false">Launch</button></li>
+        </ul>
+        <figcaption class="chart__caption" aria-live="polite">
+          <strong id="chart-cap-title">Ideathons</strong>
+          <p id="chart-cap-text">Bring a problem you care about. An ideathon turns a hunch into a one-line thesis in a single evening.</p>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===== Proof strip ===== -->
+  <section class="proof" aria-label="Highlights">
+    <div class="wrap">
+      <div class="proof__item"><span class="proof__num">2021</span><span class="label">Re-established</span></div>
+      <div class="proof__item"><span class="proof__num">16th</span><span class="label">NEC, IIT Bombay</span></div>
+      <div class="proof__item"><span class="proof__num">2</span><span class="label">IIT national stages</span></div>
+      <div class="proof__item"><span class="proof__num">10</span><span class="label">Core team members</span></div>
+    </div>
+  </section>
+
+  <!-- ===== About ===== -->
+  <section class="section" id="about" aria-labelledby="about-title">
+    <div class="wrap">
+      <div class="section__head">
+        <span class="label">About</span>
+        <h2 id="about-title">More than a club. A launchpad.</h2>
+        <p>The SMVIT Entrepreneurship Cell was re-established in 2021. Since then it has represented SMVIT at the National Entrepreneurship Challenge by IIT Madras and IIT Bombay, and run competitions, expos and networking events on campus.</p>
+      </div>
+      <div class="about">
+        <article>
+          <span class="label">Purpose</span>
+          <h3>A self-sustaining campus hub for founders</h3>
+          <p>We connect students with industry leaders, decode what the market needs, and run hands-on training so you can start your startup journey with confidence.</p>
+        </article>
+        <article>
+          <span class="label">Vision</span>
+          <h3>An ecosystem that outlasts four years</h3>
+          <p>Innovation labs, workshops, ideathons and hackathons, an annual E-Summit, strong industry partnerships, and an alumni network that offers mentorship and funding well beyond campus.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Programs ===== -->
+  <section class="section" id="programs" aria-labelledby="programs-title" style="padding-top:0">
+    <div class="wrap">
+      <div class="section__head">
+        <span class="label">Programs</span>
+        <h2 id="programs-title">What we run</h2>
+        <p>Every format maps to a stage of building a company. Join once and you can take part in all of them.</p>
+      </div>
+      <div class="programs">
+        <article class="program">
+          <span class="label">Idea</span>
+          <h3>Ideathons</h3>
+          <p>Short, fast sessions that turn a problem you care about into a sharp thesis you can test.</p>
+        </article>
+        <article class="program">
+          <span class="label">Validate</span>
+          <h3>Workshops &amp; labs</h3>
+          <p>Market research, customer interviews and unit economics, taught by people who have done it.</p>
+        </article>
+        <article class="program">
+          <span class="label">Build</span>
+          <h3>Hackathons</h3>
+          <p>Ship a working prototype in a weekend with designers and engineers from every branch.</p>
+        </article>
+        <article class="program">
+          <span class="label">Pitch</span>
+          <h3>E-Summit &amp; expos</h3>
+          <p>Pitch to founders, investors and alumni. The annual E-Summit is what we are building towards.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Team ===== -->
+  <section class="section" id="team" aria-labelledby="team-title" style="padding-top:0">
+    <div class="wrap">
+      <div class="section__head">
+        <span class="label">Team</span>
+        <h2 id="team-title">The people driving E-Cell</h2>
+        <p>Students leading through innovation, leadership, creativity and execution. Tap a name to connect on LinkedIn.</p>
+      </div>
+      <div class="team" id="team-list"></div>
+    </div>
+  </section>
+</main>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer" aria-labelledby="footer-title">
+  <div class="wrap">
+    <div class="footer__cta">
+      <h2 id="footer-title">Build something before you graduate.</h2>
+      <div class="hero__ctas">
+        <a class="btn btn--primary" href="signup.html">Join E-Cell <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn" href="login.html">Log in</a>
+      </div>
+    </div>
+
+    <div class="footer__cols">
+      <div>
+        <h3>Campus</h3>
+        <p>Sir M. Visvesvaraya Institute of Technology, Hunasamaranahalli, Bengaluru, Karnataka 562157</p>
+        <p style="margin-top:16px"><span class="label" style="color:inherit">Campus time, IST</span><br><span class="clock" id="clock">--:--:--</span></p>
+      </div>
+      <nav aria-label="Explore">
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#programs">Programs</a></li>
+          <li><a href="#team">Team</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Account">
+        <h3>Account</h3>
+        <ul>
+          <li><a href="signup.html">Sign up</a></li>
+          <li><a href="login.html">Log in</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Social">
+        <h3>Follow</h3>
+        <ul>
+          <li><a href="https://www.instagram.com/ecellsmvit" target="_blank" rel="noopener">Instagram ↗</a></li>
+          <li><a href="https://www.linkedin.com/company/e-cell-sirmvit" target="_blank" rel="noopener">LinkedIn ↗</a></li>
+          <li><a href="https://twitter.com/ecellsmvit" target="_blank" rel="noopener">X / Twitter ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <svg class="footer__word" viewBox="0 0 1000 128" aria-hidden="true" focusable="false"><text x="2" y="122" textLength="996" lengthAdjust="spacingAndGlyphs">E-CELL SMVIT</text></svg>
+
+    <div class="footer__base">
+      <span>© <span id="year">2026</span> E-Cell SMVIT</span>
+      <span>Made by students, for builders.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/vendor/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

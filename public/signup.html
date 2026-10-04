@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Join E-Cell SMVIT</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect x=%221%22 y=%221%22 width=%2230%22 height=%2230%22 rx=%226%22 fill=%22%23131a2b%22/%3E%3Cpath d=%22M9 9h12M9 16h9M9 23h12M9 9v14%22 stroke=%22%23fff%22 stroke-width=%223%22 stroke-linecap=%22round%22 fill=%22none%22/%3E%3Cpath d=%22M21 16l4-6%22 stroke=%22%23f2b705%22 stroke-width=%223%22 stroke-linecap=%22round%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="E-Cell SMVIT home">
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="6" fill="currentColor"/><path d="M9 9h12M9 16h9M9 23h12M9 9v14" stroke="var(--bg)" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M21 16l4-6" stroke="var(--mark)" stroke-width="3" stroke-linecap="round"/></svg>
+      <span>E-CELL SMVIT</span>
+    </a>
+    <nav class="nav" aria-label="Main"><a href="login.html">Log in</a></nav>
+  </div>
+</header>
+
+<main class="auth" id="main">
+  <aside class="auth__side">
+    <span class="label">Membership</span>
+    <h2>Your first step on the venture curve.</h2>
+    <ol>
+      <li>Create your account</li>
+      <li>Get your E-Cell member ID</li>
+      <li>Work through the founder checklist</li>
+    </ol>
+  </aside>
+
+  <div class="auth__main">
+    <div class="form-card">
+      <div style="display:grid;gap:8px">
+        <span class="label">Sign up</span>
+        <h1>Join E-Cell</h1>
+        <p class="sub">Open to every SMVIT student, any branch, any year.</p>
+      </div>
+
+      <div class="alert" id="form-alert" role="alert" hidden></div>
+
+      <form class="form" id="signup-form" novalidate>
+        <div class="field">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" autocomplete="name" required aria-describedby="name-error">
+          <span class="field__error" id="name-error"></span>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="email-error">
+          <span class="field__error" id="email-error"></span>
+        </div>
+        <div class="field">
+          <label for="usn">USN <span class="opt">Optional</span></label>
+          <input id="usn" name="usn" type="text" autocomplete="off" placeholder="1MV22CS001" style="text-transform:uppercase" aria-describedby="usn-error">
+          <span class="field__error" id="usn-error"></span>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <input id="password" name="password" type="password" class="has-toggle" autocomplete="new-password" required aria-describedby="password-hint password-error">
+            <button class="toggle-pw" type="button" data-toggle="password" aria-label="Show password">Show</button>
+          </div>
+          <div class="meter" id="meter" data-score="0" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          <span class="hint" id="password-hint">At least 8 characters, with letters and a number.</span>
+          <span class="field__error" id="password-error"></span>
+        </div>
+        <div class="field">
+          <label for="confirm">Confirm password</label>
+          <input id="confirm" name="confirm" type="password" autocomplete="new-password" required aria-describedby="confirm-error">
+          <span class="field__error" id="confirm-error"></span>
+        </div>
+        <button class="btn btn--primary btn--block" type="submit" id="submit">Create account <span class="arrow" aria-hidden="true">→</span></button>
+      </form>
+
+      <div class="panel" id="check-inbox" tabindex="-1" hidden>
+        <span class="label">One more step</span>
+        <h2>Check your inbox</h2>
+        <p class="sub">We sent a confirmation link to <strong id="confirm-email"></strong>. Open it on this device and you'll land on your dashboard, signed in.</p>
+      </div>
+
+      <p class="switch">Already a member? <a href="login.html">Log in</a></p>
+    </div>
+  </div>
+</main>
+
+<script src="js/vendor/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/auth-page.js"></script>
+</body>
+</html>

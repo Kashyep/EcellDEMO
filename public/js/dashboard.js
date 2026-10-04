@@ -1,0 +1,91 @@
+// Dashboard: guard the page, greet the member, run the founder checklist.
+(function () {
+  const STEPS = [
+    ["joined", "Join E-Cell", "Done when you created your account."],
+    ["thesis", "Write your one-line idea", "Who has the problem, and why now?"],
+    ["users", "Talk to five potential users", "Ask about their problem, not your solution."],
+    ["build", "Join a hackathon team", "Ship a prototype someone can click."],
+    ["pitch", "Pitch at an E-Cell event", "Three minutes, one ask."],
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  // Arriving from the confirmation email: Supabase puts type=signup in the URL hash.
+  const fromConfirmLink = /type=signup/.test(location.hash);
+
+  async function init() {
+    let res;
+    try {
+      res = await Auth.me();
+    } catch (err) {
+      $("loading").textContent = `${err.message} Refresh the page to try again.`;
+      return;
+    }
+    if (!res) {
+      location.replace("login.html");
+      return;
+    }
+    const user = res.user;
+    const first = user.name.split(" ")[0];
+
+    $("hello").textContent = `Welcome, ${first}.`;
+    $("hello-sub").textContent = `You're signed in as ${user.email}. This is your E-Cell home base.`;
+    $("pass-name").textContent = user.name;
+    $("pass-id").textContent = user.memberId;
+    $("pass-usn").textContent = user.usn || "Not added";
+    $("pass-since").textContent = new Date(user.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+
+    renderChecklist(user);
+
+    $("loading").hidden = true;
+    $("dash").hidden = false;
+
+    const flash = Auth.takeFlash() || (fromConfirmLink ? `Email confirmed. Welcome to E-Cell, ${first}!` : null);
+    if (flash) showToast(flash);
+  }
+
+  // Ticks are saved to the member's profile, so they follow them across devices.
+  function renderChecklist(user) {
+    const done = Object.assign({}, user.checklist, { joined: true });
+
+    const list = $("checklist");
+    list.innerHTML = "";
+    STEPS.forEach(([id, title, hint]) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<label for="step-${id}"><input type="checkbox" id="step-${id}"><strong></strong><small></small></label>`;
+      const box = li.querySelector("input");
+      box.checked = !!done[id];
+      box.disabled = id === "joined";
+      li.querySelector("strong").textContent = title;
+      li.querySelector("small").textContent = hint;
+      box.addEventListener("change", async () => {
+        done[id] = box.checked;
+        update();
+        try {
+          await Auth.saveChecklist(user.id, done);
+        } catch (err) {
+          done[id] = !box.checked;
+          box.checked = done[id];
+          update();
+          showToast(`Couldn't save that tick. ${err.message}`);
+        }
+      });
+      list.appendChild(li);
+    });
+
+    function update() {
+      const n = STEPS.filter(([id]) => done[id]).length;
+      $("check-count").textContent = `${n} / ${STEPS.length}`;
+      $("check-bar").style.width = `${(n / STEPS.length) * 100}%`;
+    }
+    update();
+  }
+
+  async function logout() {
+    try { await Auth.logout(); } catch (_) { /* session may already be gone */ }
+    location.href = "index.html";
+  }
+  $("logout").addEventListener("click", logout);
+  $("logout-top").addEventListener("click", logout);
+
+  init();
+})();

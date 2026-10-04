@@ -1,0 +1,7 @@
+node_modules/
+public/js/config.js
+public/js/vendor/
+.env
+.env.local
+.vercel
+data/

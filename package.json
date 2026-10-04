@@ -1,0 +1,14 @@
+{
+  "name": "ecell-smvit-site",
+  "version": "2.0.0",
+  "private": true,
+  "description": "E-Cell SMVIT website: landing page, signup/login and member dashboard on Supabase Auth.",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "npm run build && npx --yes http-server public -p 3000 -c-1"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.117.2"
+  },
+  "engines": { "node": ">=18" }
+}

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>E-Cell Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect x=%221%22 y=%221%22 width=%2230%22 height=%2230%22 rx=%226%22 fill=%22%23131a2b%22/%3E%3Cpath d=%22M9 9h12M9 16h9M9 23h12M9 9v14%22 stroke=%22%23fff%22 stroke-width=%223%22 stroke-linecap=%22round%22 fill=%22none%22/%3E%3Cpath d=%22M21 16l4-6%22 stroke=%22%23f2b705%22 stroke-width=%223%22 stroke-linecap=%22round%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="E-Cell SMVIT home">
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="6" fill="currentColor"/><path d="M9 9h12M9 16h9M9 23h12M9 9v14" stroke="var(--bg)" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M21 16l4-6" stroke="var(--mark)" stroke-width="3" stroke-linecap="round"/></svg>
+      <span>E-CELL SMVIT</span>
+    </a>
+    <nav class="nav" aria-label="Account">
+      <a href="index.html">Home</a>
+      <button class="btn" type="button" id="logout-top" style="padding:0.65em 1em;font-size:0.9rem">Log out</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <p class="loading" id="loading">Checking your session…</p>
+
+  <div class="dash" id="dash" hidden>
+    <div class="dash__hello">
+      <span class="label">Dashboard</span>
+      <h1 id="hello">Welcome.</h1>
+      <p id="hello-sub">You're signed in.</p>
+    </div>
+
+    <div class="dash__grid">
+      <section class="pass" aria-label="Member pass">
+        <div class="pass__top"><span>E-Cell SMVIT</span><span>Member pass</span></div>
+        <div class="pass__name" id="pass-name">Member</div>
+        <dl>
+          <div><dt>Member ID</dt><dd id="pass-id">—</dd></div>
+          <div><dt>Status</dt><dd>Active</dd></div>
+          <div><dt>Member since</dt><dd id="pass-since">—</dd></div>
+          <div><dt>USN</dt><dd id="pass-usn">—</dd></div>
+        </dl>
+      </section>
+
+      <section class="panel" aria-labelledby="check-title">
+        <div class="panel__head">
+          <h2 id="check-title">Founder checklist</h2>
+          <span class="label" id="check-count">0 / 5</span>
+        </div>
+        <div class="progress" aria-hidden="true"><span id="check-bar" style="width:0%"></span></div>
+        <ul class="checklist" id="checklist"></ul>
+      </section>
+    </div>
+
+    <div class="dash__actions">
+      <a class="btn btn--primary" href="index.html#programs">Browse programs <span class="arrow" aria-hidden="true">→</span></a>
+      <button class="btn" type="button" id="logout">Log out</button>
+    </div>
+  </div>
+</main>
+
+<script src="js/vendor/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -14,7 +14,18 @@ if (!url) {
 } else if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url) && !/^https:\/\/[a-z0-9.-]+/i.test(url)) {
   missing.push(`SUPABASE_URL must be a valid https URL like https://abcd.supabase.co (received "${url}")`);
 }
-if (!key) missing.push("SUPABASE_ANON_KEY (not set)");
+if (!key) {
+  missing.push("SUPABASE_ANON_KEY (not set)");
+} else if (key.startsWith("sb_secret_")) {
+  missing.push("SUPABASE_ANON_KEY is a secret key (sb_secret_...). Use the public anon/publishable key instead.");
+} else if (key.split(".").length === 3) {
+  try {
+    const payload = JSON.parse(Buffer.from(key.split(".")[1], "base64").toString("utf8"));
+    if (payload.role === "service_role") {
+      missing.push("SUPABASE_ANON_KEY is a service_role key. Never expose service_role in the browser! Use the 'anon' public key.");
+    }
+  } catch (_) {}
+}
 if (missing.length) {
   console.error(`Build stopped. Set these environment variables: ${missing.join(", ")}`);
   process.exit(1);

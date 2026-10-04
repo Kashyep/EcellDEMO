@@ -77,6 +77,8 @@
       memberId: (profile && profile.member_id) || "Pending",
       createdAt: (profile && profile.created_at) || authUser.created_at,
       checklist: (profile && profile.checklist) || {},
+      domain: (profile && profile.domain) || null,
+      designation: (profile && profile.designation) || null,
     };
   }
 
@@ -110,7 +112,7 @@
     const authUser = data.session.user;
     const { data: profile, error: pErr } = await sb()
       .from("profiles")
-      .select("full_name, usn, member_id, checklist, created_at")
+      .select("full_name, usn, member_id, checklist, created_at, domain, designation")
       .eq("id", authUser.id)
       .maybeSingle();
     if (pErr) throw friendly(pErr);
@@ -135,6 +137,9 @@
     me,
     logout,
     saveChecklist,
+    client: sb,
+    sb,
+    friendly,
     flash(msg) { try { sessionStorage.setItem(FLASH_KEY, msg); } catch (_) { /* toast is optional */ } },
     takeFlash() {
       try { const m = sessionStorage.getItem(FLASH_KEY); sessionStorage.removeItem(FLASH_KEY); return m; } catch (_) { return null; }

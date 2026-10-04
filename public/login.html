@@ -4,17 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Log in to E-Cell SMVIT</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect x=%221%22 y=%221%22 width=%2230%22 height=%2230%22 rx=%226%22 fill=%22%23131a2b%22/%3E%3Cpath d=%22M9 9h12M9 16h9M9 23h12M9 9v14%22 stroke=%22%23fff%22 stroke-width=%223%22 stroke-linecap=%22round%22 fill=%22none%22/%3E%3Cpath d=%22M21 16l4-6%22 stroke=%22%23f2b705%22 stroke-width=%223%22 stroke-linecap=%22round%22/%3E%3C/svg%3E">
+<link rel="icon" href="img/logo-black.svg">
+<link rel="icon" href="img/logo-black.svg" media="(prefers-color-scheme: light)">
+<link rel="icon" href="img/logo-white.png" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=Big+Shoulders+Display:wght@700..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Silkscreen:wght@400;700&display=swap">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="index.html" aria-label="E-Cell SMVIT home">
-      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="6" fill="currentColor"/><path d="M9 9h12M9 16h9M9 23h12M9 9v14" stroke="var(--bg)" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M21 16l4-6" stroke="var(--mark)" stroke-width="3" stroke-linecap="round"/></svg>
+      <img class="brand__logo brand__logo--dark" src="img/logo-white.png" alt="" width="425" height="410">
+      <img class="brand__logo brand__logo--light" src="img/logo-black.svg" alt="" width="426" height="381">
       <span>E-CELL SMVIT</span>
     </a>
     <nav class="nav" aria-label="Main"><a class="btn btn--primary" href="signup.html">Join E-Cell</a></nav>
@@ -23,6 +26,12 @@
 
 <main class="auth" id="main">
   <aside class="auth__side">
+    <div class="auth__side-brand">
+      <a class="brand" href="index.html" aria-label="E-Cell SMVIT home">
+        <img class="brand__logo brand__logo--dark" src="img/logo-white.png" alt="" width="425" height="410">
+        <span>E-CELL SMVIT</span>
+      </a>
+    </div>
     <span class="label">Members</span>
     <h2>Welcome back, builder.</h2>
     <ol>
@@ -34,6 +43,11 @@
 
   <div class="auth__main">
     <div class="form-card">
+      <div class="brand">
+        <img class="brand__logo brand__logo--dark" src="img/logo-white.png" alt="" width="425" height="410">
+        <img class="brand__logo brand__logo--light" src="img/logo-black.svg" alt="" width="426" height="381">
+        <span>E-CELL SMVIT</span>
+      </div>
       <div style="display:grid;gap:8px">
         <span class="label">Log in</span>
         <h1>Log in</h1>

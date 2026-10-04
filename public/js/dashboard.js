@@ -34,7 +34,36 @@
     $("pass-usn").textContent = user.usn || "Not added";
     $("pass-since").textContent = new Date(user.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
-    renderChecklist(user);
+    // Pass role display: Tech · Executive etc.
+    const formattedRole = window.Roles
+      ? window.Roles.formatPassRole(user.domain, user.designation)
+      : (user.designation || "Member");
+
+    const passRole = $("pass-role");
+    if (passRole) {
+      passRole.textContent = formattedRole;
+    }
+
+    const isMember = !user.designation || (window.Roles && window.Roles.normalizeRole(user.designation) === "member");
+    const founderPanel = $("founder-panel");
+    const teamNote = $("team-note");
+
+    if (isMember) {
+      if (founderPanel) founderPanel.hidden = false;
+      if (teamNote) {
+        teamNote.textContent = "General Member: Complete the founder checklist above to build your startup foundation. Domain appointments and team tasks will appear once assigned by a domain head.";
+      }
+      renderChecklist(user);
+    } else {
+      // Only unassigned members render founder checklist; do not clutter role views unnecessarily.
+      if (founderPanel) founderPanel.hidden = true;
+    }
+
+    // Mount and render role dashboard
+    const roleDashboardEl = $("role-dashboard");
+    if (roleDashboardEl && window.RoleDashboard && typeof window.RoleDashboard.render === "function") {
+      window.RoleDashboard.render(roleDashboardEl, user);
+    }
 
     $("loading").hidden = true;
     $("dash").hidden = false;
@@ -48,15 +77,28 @@
     const done = Object.assign({}, user.checklist, { joined: true });
 
     const list = $("checklist");
-    list.innerHTML = "";
+    list.replaceChildren();
     STEPS.forEach(([id, title, hint]) => {
       const li = document.createElement("li");
-      li.innerHTML = `<label for="step-${id}"><input type="checkbox" id="step-${id}"><strong></strong><small></small></label>`;
-      const box = li.querySelector("input");
+      const label = document.createElement("label");
+      label.htmlFor = `step-${id}`;
+
+      const box = document.createElement("input");
+      box.type = "checkbox";
+      box.id = `step-${id}`;
       box.checked = !!done[id];
       box.disabled = id === "joined";
-      li.querySelector("strong").textContent = title;
-      li.querySelector("small").textContent = hint;
+
+      const strong = document.createElement("strong");
+      strong.textContent = title;
+
+      const small = document.createElement("small");
+      small.textContent = hint;
+
+      label.appendChild(box);
+      label.appendChild(strong);
+      label.appendChild(small);
+      li.appendChild(label);
       box.addEventListener("change", async () => {
         done[id] = box.checked;
         update();

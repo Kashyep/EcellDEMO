@@ -114,10 +114,10 @@ BEGIN
   -- Insert auth users
   INSERT INTO auth.users (id, email, raw_user_meta_data)
   VALUES
-    (v_uid_head_tech, 'head.tech@ecellsmvit.in', '{"full_name": "Tech Head", "usn": "1VE21CS001"}'::jsonb),
-    (v_uid_cohead_tech, 'cohead.tech@ecellsmvit.in', '{"full_name": "Tech Co-Head", "usn": "1VE21CS002"}'::jsonb),
-    (v_uid_exec_tech1, 'exec1.tech@ecellsmvit.in', '{"full_name": "Tech Exec One", "usn": "1VE22CS003"}'::jsonb),
-    (v_uid_exec_tech2, 'exec2.tech@ecellsmvit.in', '{"full_name": "Tech Exec Two", "usn": "1VE22CS004"}'::jsonb),
+    (v_uid_head_tech, 'head.fixture@ecellsmvit.in', '{"full_name": "Tech Head", "usn": "1VE21CS001"}'::jsonb),
+    (v_uid_cohead_tech, 'cohead.fixture@ecellsmvit.in', '{"full_name": "Tech Co-Head", "usn": "1VE21CS002"}'::jsonb),
+    (v_uid_exec_tech1, 'exec1.fixture@ecellsmvit.in', '{"full_name": "Tech Exec One", "usn": "1VE22CS003"}'::jsonb),
+    (v_uid_exec_tech2, 'exec2.fixture@ecellsmvit.in', '{"full_name": "Tech Exec Two", "usn": "1VE22CS004"}'::jsonb),
     (v_uid_head_mkt, 'head.mkt@ecellsmvit.in', '{"full_name": "Marketing Head", "usn": "1VE21IS005"}'::jsonb),
     (v_uid_exec_mkt, 'exec.mkt@ecellsmvit.in', '{"full_name": "Marketing Exec", "usn": "1VE22IS006"}'::jsonb),
     (v_uid_unassigned, 'new.member@ecellsmvit.in', '{"full_name": "New Candidate", "usn": "1VE23CS007"}'::jsonb)
@@ -126,10 +126,10 @@ BEGIN
   -- Ensure profiles exist
   INSERT INTO public.profiles (id, full_name, email, usn, member_id, domain, designation)
   VALUES
-    (v_uid_head_tech, 'Tech Head', 'head.tech@ecellsmvit.in', '1VE21CS001', 'ECS-2026-TE0001', 'tech', 'head'),
-    (v_uid_cohead_tech, 'Tech Co-Head', 'cohead.tech@ecellsmvit.in', '1VE21CS002', 'ECS-2026-TE0002', 'tech', 'co_head'),
-    (v_uid_exec_tech1, 'Tech Exec One', 'exec1.tech@ecellsmvit.in', '1VE22CS003', 'ECS-2026-TE0003', 'tech', 'executive'),
-    (v_uid_exec_tech2, 'Tech Exec Two', 'exec2.tech@ecellsmvit.in', '1VE22CS004', 'ECS-2026-TE0004', 'tech', 'executive'),
+    (v_uid_head_tech, 'Tech Head', 'head.fixture@ecellsmvit.in', '1VE21CS001', 'ECS-2026-TE0001', 'tech', 'head'),
+    (v_uid_cohead_tech, 'Tech Co-Head', 'cohead.fixture@ecellsmvit.in', '1VE21CS002', 'ECS-2026-TE0002', 'tech', 'co_head'),
+    (v_uid_exec_tech1, 'Tech Exec One', 'exec1.fixture@ecellsmvit.in', '1VE22CS003', 'ECS-2026-TE0003', 'tech', 'executive'),
+    (v_uid_exec_tech2, 'Tech Exec Two', 'exec2.fixture@ecellsmvit.in', '1VE22CS004', 'ECS-2026-TE0004', 'tech', 'executive'),
     (v_uid_head_mkt, 'Marketing Head', 'head.mkt@ecellsmvit.in', '1VE21IS005', 'ECS-2026-MK0005', 'marketing', 'head'),
     (v_uid_exec_mkt, 'Marketing Exec', 'exec.mkt@ecellsmvit.in', '1VE22IS006', 'ECS-2026-MK0006', 'marketing', 'executive'),
     (v_uid_unassigned, 'New Candidate', 'new.member@ecellsmvit.in', '1VE23CS007', 'ECS-2026-UN0007', null, null)

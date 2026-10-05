@@ -50,6 +50,13 @@
   --ok: #4cc58a; --err: #ff7a6e; --panel: #060912; --panel-fg: #e6e9f2;
   color-scheme: dark;
 }
+:root[data-theme="light"] {
+  --bg: #eef0f5; --surface: #f9fafc; --ink: #131a2b; --muted: #5a6276;
+  --line: #d3d8e3; --grid: rgba(43, 76, 255, 0.07);
+  --accent: #2b4cff; --accent-ink: #ffffff; --mark: #f2b705; --mark-ink: #1b1400;
+  --ok: #1d8a54; --err: #c2362b; --panel: #131a2b; --panel-fg: #eef0f5;
+  color-scheme: light;
+}
 
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -159,6 +166,62 @@ p { margin: 0; }
   .brand__logo { height: 24px; }
   .nav { gap: 8px; }
   .nav .btn { padding: 0.5em 0.7em; font-size: 0.82rem; }
+}
+
+/* ---------- Theme Toggle ---------- */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.theme-toggle:hover {
+  transform: translate(-1px, -1px);
+  border-color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.theme-toggle:active {
+  transform: none;
+  box-shadow: none;
+}
+.theme-toggle__icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* Default in light mode: show moon icon (to switch to dark) */
+.theme-toggle__icon--light { display: none; }
+.theme-toggle__icon--dark { display: block; }
+
+/* In dark mode: show sun icon (to switch to light) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle__icon--light { display: block; }
+  :root:not([data-theme="light"]) .theme-toggle__icon--dark { display: none; }
+}
+:root[data-theme="dark"] .theme-toggle__icon--light { display: block; }
+:root[data-theme="dark"] .theme-toggle__icon--dark { display: none; }
+:root[data-theme="light"] .theme-toggle__icon--light { display: none; }
+:root[data-theme="light"] .theme-toggle__icon--dark { display: block; }
+
+@media (max-width: 480px) {
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+  }
+  .theme-toggle__icon {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 /* ---------- Hero ---------- */

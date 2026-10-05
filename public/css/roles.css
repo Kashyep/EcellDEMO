@@ -40,6 +40,16 @@
   --role-warn: #f5c22e;
   --role-err: #ff7d70;
 }
+:root[data-theme="light"] {
+  --role-border: #cdd3df;
+  --role-surface: #ffffff;
+  --role-surface-subtle: #f2f4f8;
+  --role-ink-muted: #4a5468;
+  --role-accent: #1e3ebd;
+  --role-ok: #157342;
+  --role-warn: #946800;
+  --role-err: #b92518;
+}
 
 /* Base focus style */
 :focus-visible {

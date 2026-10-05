@@ -114,12 +114,23 @@
   const year = document.getElementById("year");
   if (year) year.textContent = String(new Date().getFullYear());
 
-  // ---------- Header: show Dashboard when signed in ----------
+  // ---------- Header: show Dashboard and Log out when signed in ----------
   if (window.Auth) {
     Auth.me().then((res) => {
       if (!res) return;
       document.querySelectorAll("[data-guest]").forEach((el) => { el.hidden = true; });
       document.querySelectorAll("[data-member]").forEach((el) => { el.hidden = false; });
+
+      const logoutBtn = document.getElementById("nav-logout");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+          try {
+            await Auth.logout();
+          } catch (_) {}
+          document.querySelectorAll("[data-member]").forEach((el) => { el.hidden = true; });
+          document.querySelectorAll("[data-guest]").forEach((el) => { el.hidden = false; });
+        });
+      }
     }).catch(() => { /* header stays in guest state */ });
   }
 })();

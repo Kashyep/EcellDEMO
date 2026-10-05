@@ -23,8 +23,12 @@ if (fs.existsSync(envPath)) {
   }
 }
 
-let url = (process.env.SUPABASE_URL || "").trim().replace(/^["']|["']$/g, "").replace(/\/+$/, "");
-const key = (process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || "").trim().replace(/^["']|["']$/g, "");
+// Default public credentials for deployment fallbacks (safe publishable keys)
+const DEFAULT_URL = "https://kovebqhqibixpdlwgqlr.supabase.co";
+const DEFAULT_KEY = "sb_publishable_WWM_JYb8fra9QPoLiUSBjg_xpI75EM-";
+
+let url = (process.env.SUPABASE_URL || DEFAULT_URL).trim().replace(/^["']|["']$/g, "").replace(/\/+$/, "");
+const key = (process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || DEFAULT_KEY).trim().replace(/^["']|["']$/g, "");
 
 const missing = [];
 if (!url) {

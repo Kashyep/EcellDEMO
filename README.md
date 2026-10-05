@@ -134,9 +134,9 @@ The automated test suite in `supabase/test-roles-security.sql` verifies all data
   npx supabase db query --local --file supabase/test-roles-security.sql
   ```
 - **Via Supabase CLI (Authorized Linked Project):**
-  Authorized linked variant for remote project verification (prerequisites: logged into Supabase CLI with permissions for project `ladodpdxucvywhiuewkx`):
+  Authorized linked variant for remote project verification (prerequisites: logged into Supabase CLI with permissions for project `kovebqhqibixpdlwgqlr`):
   ```bash
-  npx supabase db query --linked --project-ref ladodpdxucvywhiuewkx --file supabase/test-roles-security.sql
+  npx supabase db query --linked --project-ref kovebqhqibixpdlwgqlr --file supabase/test-roles-security.sql
   ```
 - **Via psql:**
   ```bash

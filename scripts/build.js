@@ -5,6 +5,24 @@
 const fs = require("fs");
 const path = require("path");
 
+// Automatically load local .env if present and variables aren't already set in environment
+const envPath = path.join(__dirname, "..", ".env");
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, "utf8");
+  for (const line of envContent.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const match = trimmed.match(/^([^=]+)=(.*)$/);
+    if (match) {
+      const k = match[1].trim();
+      const v = match[2].trim().replace(/^["']|["']$/g, "");
+      if (!process.env[k]) {
+        process.env[k] = v;
+      }
+    }
+  }
+}
+
 let url = (process.env.SUPABASE_URL || "").trim().replace(/^["']|["']$/g, "").replace(/\/+$/, "");
 const key = (process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || "").trim().replace(/^["']|["']$/g, "");
 

@@ -20,7 +20,7 @@ components/
   dashboard/             Sidebar / mobile tab bar and the role-aware dashboard views
   num.tsx                The only place the pixel font is used
 lib/                     Supabase client + auth helpers, role logic, types
-public/img/              Logos and gallery placeholders (replace with real event photos)
+public/img/              Logos and owner photo assets
 supabase/                Database migrations, seeds, and test harness (unchanged by the redesign)
   migrations/            Migration scripts
     20261004150300_create_profiles.sql  Base migration (profiles, trigger, initial RLS) - UNTOUCHED
@@ -52,16 +52,37 @@ npm run build && npm run lint
 
 ## Gallery photos
 
-The landing gallery uses SVG placeholders in `public/img/gallery/`; captions are rendered on the page, not baked into the images. Photos requested from the campus organisers (4:3, high resolution):
+The landing gallery is driven by `content/gallery.json` and renders real campus event photos in a portrait 4:5 aspect ratio with interactive dialogs and category filtering. Because the landing page is a static server-rendered page (`app/page.tsx`), image file existence (`checkLocalImageExists`) is evaluated at build time. When a photo is missing from `public/img/gallery/`, the gallery displays a branded accent block fallback without requesting nonexistent files or producing network/console errors. When adding or updating local photos in `public/img/gallery/`, a project rebuild and redeploy (`npm run build` or Vercel deployment) is required for the static server render to detect the images.
 
-| File | Requested photo |
-|---|---|
-| `ideathon.svg` | Campus Ideathon pitch and brainstorming session |
-| `workshop.svg` | Hands-on market research and founder masterclass session |
-| `hackathon.svg` | Student teams building working prototypes during the weekend hackathon |
-| `esummit-expo.svg` | Keynote, panel discussion and campus startup exhibition |
+### Photos Needed
 
-Replace a file (or point `src` at the new photo) and adjust its title/description in `GALLERY_ITEMS` in `components/landing/scroll-grid-wrapper.tsx`.
+All 8 event photos (`.jpg`) are still needed in `public/img/gallery/`:
+
+1. `investors-dilemma-2026.jpg` — Investor's Dilemma (Competition)
+2. `recruitment-2026-round2.jpg` — Recruitment 2026–27: Round 2 (Recruitment)
+3. `recruitment-2026.jpg` — Recruitment 2026–27 (Recruitment)
+4. `extra-milers-s2.jpg` — Extra Mile S2: the Extra Milers (Extra Mile, Featured)
+5. `extra-mile-s2-mentors.jpg` — Extra Mile S2: Meet the Mentors (Extra Mile)
+6. `extra-mile-s2-session.jpg` — Meet Your Mentor: Dr. Debasish Chakraborty (Extra Mile)
+7. `extra-mile-s2-launch.jpg` — Extra Mile Season 2 launch (Extra Mile)
+8. `team-2025.jpg` — Meet the 2025 team (Team)
+
+### Photo Sourcing & Quality Guidelines
+
+- **Photo content:** Owner saves one or more real EVENT photos capturing people and collaborative moments (builders, participants, mentors, teams), **not** promotional flyers or posters.
+- **Source account:** Use own-account photos only from `@ecell_smvit`. Do not scrape Instagram, embed private APIs, or hotlink external images. Honor removal requests promptly.
+- **Specifications:** Save as `<id>.jpg` into `public/img/gallery/`. Dimensions should be at least 1080px wide (portrait 4:5 orientation preferred) and compressed under ~400KB.
+- **Alt Text Policy (TODO):** Alt text MUST describe the actual photo content; never use the event title as photo alt text. Leave `alt: ""` with a README TODO until owner supplies the real photo asset and writes a true descriptive alt text.
+- **Adding events:** To add older or future events, append an entry to `content/gallery.json` and place the local photo in `public/img/gallery/<id>.jpg`.
+- **Potential sources:** The owner can source high-quality photos from existing account highlights:
+  - `Events 2026`
+  - `Events 2025`
+  - `Events 2024`
+  - `Events 2023`
+  - `ExtraMile`
+  - `Hall of Fame`
+  - `ECell Represent`
+  - `Farewell 2023`
 
 ---
 

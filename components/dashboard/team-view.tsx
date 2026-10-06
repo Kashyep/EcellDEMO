@@ -23,6 +23,7 @@ import {
   EmptyDescription,
 } from "@/components/ui/empty";
 import type { TeamStat, DirectoryMember, FoundMember } from "@/lib/types";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 
 const teamChartConfig: ChartConfig = {
   rate: {
@@ -328,14 +329,12 @@ export function TeamView() {
 
   return (
     <div className="dash-team-view">
-      <header style={{ marginBottom: "24px" }}>
-        <h1 className="dash-title">Domain Team</h1>
-        <p className="dash-subtitle">
-          {isHead
+      <DashboardPageHeader
+        title="Domain Team"
+        subtitle={isHead
             ? "Team analytics, performance breakdown, and member management."
             : "Team task metrics and executive performance overview."}
-        </p>
-      </header>
+      />
 
       {/* Loading States */}
       {loadingTeamStats && <TableSkeleton rows={4} />}

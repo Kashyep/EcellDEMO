@@ -15,7 +15,6 @@ import { useTheme } from "@/components/theme-provider";
 import { Roles } from "@/lib/roles";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { Num } from "@/components/num";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -29,7 +28,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 
@@ -92,9 +90,9 @@ export function DashboardSidebar() {
   ];
 
   return (
-    <Sidebar collapsible="icon" className="motion-reduce:transition-none">
+    <Sidebar variant="floating" collapsible="icon" className="motion-reduce:transition-none">
       <SidebarHeader className="border-b border-sidebar-border/50 p-2.5">
-        <div className="flex items-center justify-between gap-2 group-data-[collapsible=icon]:justify-center">
+        <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <Link
             href="/dashboard"
             className="flex items-center gap-2.5 overflow-hidden text-sidebar-foreground"
@@ -111,7 +109,6 @@ export function DashboardSidebar() {
               E-CELL SMVIT
             </span>
           </Link>
-          <SidebarTrigger className="hidden md:flex group-data-[collapsible=icon]:hidden" />
         </div>
       </SidebarHeader>
 
@@ -173,7 +170,6 @@ export function DashboardSidebar() {
         )}
 
         <div className="flex items-center gap-2 pt-1 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
-          <ThemeToggle />
           <Button
             variant="outline"
             size="sm"

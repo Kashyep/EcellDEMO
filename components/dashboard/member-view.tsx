@@ -5,6 +5,7 @@ import { useAuth } from "@/components/auth-provider";
 import { useToast } from "@/components/toast-provider";
 import { Auth } from "@/lib/auth";
 import { Num } from "@/components/num";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 
 const STEPS = [
   { id: "joined", title: "Join E-Cell", hint: "Done when you created your account." },
@@ -65,12 +66,10 @@ export function MemberView() {
 
   return (
     <div className="dash-member-view">
-      <header style={{ marginBottom: "28px" }}>
-        <h1 className="dash-title">Welcome, {first}.</h1>
-        <p className="dash-subtitle">
-          You&apos;re signed in as {user.email}. This is your E-Cell home base.
-        </p>
-      </header>
+      <DashboardPageHeader
+        title={<>Welcome, {first}.</>}
+        subtitle={<>You&apos;re signed in as {user.email}. This is your E-Cell home base.</>}
+      />
 
       {/* Founder Member Pass */}
       <div className="dash-card" style={{ marginBottom: "28px" }} aria-label="Member Pass">

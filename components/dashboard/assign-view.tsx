@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/empty";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 
 export function AssignView() {
   const { user } = useAuth();
@@ -124,12 +125,10 @@ export function AssignView() {
 
   return (
     <div className="dash-assign-view">
-      <header style={{ marginBottom: "24px" }}>
-        <h1 className="dash-title">Assign New Task</h1>
-        <p className="dash-subtitle">
-          Create and assign tasks to domain team members with deadlines and priorities.
-        </p>
-      </header>
+      <DashboardPageHeader
+        title="Assign New Task"
+        subtitle="Create and assign tasks to domain team members with deadlines and priorities."
+      />
 
       {loadingDirectory && (
         <div className="dash-state">

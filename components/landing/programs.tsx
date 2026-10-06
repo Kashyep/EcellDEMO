@@ -2,6 +2,7 @@
 
 import React from "react";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { DotPattern } from "@/components/ui/dot-pattern";
 
 const PROGRAMS_DATA = [
   {
@@ -36,8 +37,9 @@ const PROGRAMS_DATA = [
 
 export function ProgramsSection() {
   return (
-    <section id="programs" className="py-20 sm:py-28 bg-muted/15" aria-labelledby="programs-title">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="programs" className="relative isolate overflow-hidden py-20 sm:py-28 bg-muted/15" aria-labelledby="programs-title">
+      <DotPattern className="-z-10 [mask-image:radial-gradient(ellipse_60%_55%_at_85%_35%,black,transparent)] [-webkit-mask-image:radial-gradient(ellipse_60%_55%_at_85%_35%,black,transparent)]" />
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Section Header */}
         <BlurFade inView>
           <div className="max-w-3xl space-y-4">

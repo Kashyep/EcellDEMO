@@ -22,6 +22,7 @@ import {
   EmptyDescription,
 } from "@/components/ui/empty";
 import type { Task } from "@/lib/types";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 
 export function ReviewView() {
   const { user } = useAuth();
@@ -83,18 +84,16 @@ export function ReviewView() {
 
   return (
     <div className="dash-review-view">
-      <header style={{ marginBottom: "24px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
-          <h1 className="dash-title" style={{ margin: 0 }}>Review Queue</h1>
+      <DashboardPageHeader
+        title="Review Queue"
+        aside={
           <span className="dash-badge dash-badge--accent" style={{ fontSize: "0.82rem" }}>
             <Num value={submittedTasks.length} animate="slide" />
             <span style={{ fontFamily: "inherit", marginLeft: "4px" }}>Tasks Needing Review</span>
           </span>
-        </div>
-        <p className="dash-subtitle" style={{ marginTop: "6px" }}>
-          Review submissions from domain team members, provide feedback, and approve or request changes.
-        </p>
-      </header>
+        }
+        subtitle="Review submissions from domain team members, provide feedback, and approve or request changes."
+      />
 
       {loadingDomainTasks && <ReviewListSkeleton count={2} />}
 

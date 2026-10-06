@@ -26,6 +26,7 @@ import {
   EmptyTitle,
   EmptyDescription,
 } from "@/components/ui/empty";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 
 const statusChartConfig: ChartConfig = {
   count: {
@@ -114,12 +115,10 @@ export function SeniorDashboardView() {
 
   return (
     <div className="dash-senior-view">
-      <header style={{ marginBottom: "24px" }}>
-        <h1 className="dash-title">{domainName} Overview</h1>
-        <p className="dash-subtitle">
-          Domain-level status, metrics, and personal assigned tasks.
-        </p>
-      </header>
+      <DashboardPageHeader
+        title={<>{domainName} Overview</>}
+        subtitle="Domain-level status, metrics, and personal assigned tasks."
+      />
 
       {/* Domain Scope Totals Across All 5 Statuses */}
       <div className="dash-card">

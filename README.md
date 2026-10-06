@@ -20,7 +20,7 @@ components/
   dashboard/             Sidebar / mobile tab bar and the role-aware dashboard views
   num.tsx                The only place the pixel font is used
 lib/                     Supabase client + auth helpers, role logic, types
-public/img/              Logos and clearly-labelled gallery placeholders (replace with real event photos)
+public/img/              Logos and gallery placeholders (replace with real event photos)
 supabase/                Database migrations, seeds, and test harness (unchanged by the redesign)
   migrations/            Migration scripts
     20261004150300_create_profiles.sql  Base migration (profiles, trigger, initial RLS) - UNTOUCHED
@@ -52,7 +52,16 @@ npm run build && npm run lint
 
 ## Gallery photos
 
-The landing gallery uses labelled SVG placeholders in `public/img/gallery/` (`ideathon`, `workshop`, `hackathon`, `esummit-expo`). Replace them with real event photos (and captions/credits) in `components/landing/gallery.tsx`.
+The landing gallery uses SVG placeholders in `public/img/gallery/`; captions are rendered on the page, not baked into the images. Photos requested from the campus organisers (4:3, high resolution):
+
+| File | Requested photo |
+|---|---|
+| `ideathon.svg` | Campus Ideathon pitch and brainstorming session |
+| `workshop.svg` | Hands-on market research and founder masterclass session |
+| `hackathon.svg` | Student teams building working prototypes during the weekend hackathon |
+| `esummit-expo.svg` | Keynote, panel discussion and campus startup exhibition |
+
+Replace a file (or point `src` at the new photo) and adjust its title/description in `GALLERY_ITEMS` in `components/landing/scroll-grid-wrapper.tsx`.
 
 ---
 

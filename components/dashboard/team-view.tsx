@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { Search, UserPlus, UserX, X, Users, Sparkles, Check } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { useToast } from "@/components/toast-provider";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
@@ -51,13 +52,16 @@ export function TeamView() {
   const isHead = role === "head";
 
   // Manage Team states (Head-only)
-  const [lookupQuery, setLookupQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
-  const [searchResult, setSearchResult] = useState<FoundMember | null>(null);
+  const [searchResults, setSearchResults] = useState<FoundMember[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
-  const [selectedNewRole, setSelectedNewRole] = useState<"executive" | "co_head">("executive");
-  const [assigning, setAssigning] = useState(false);
+  const [candidateRoles, setCandidateRoles] = useState<Record<string, "executive" | "co_head">>({});
+  const [assigningId, setAssigningId] = useState<string | null>(null);
   const [mutatingMemberId, setMutatingMemberId] = useState<string | null>(null);
+  const [recentUnassigned, setRecentUnassigned] = useState<FoundMember[]>([]);
+  const [loadingRecent, setLoadingRecent] = useState(false);
+  const [showRecent, setShowRecent] = useState(false);
 
   // Subordinates roster in domain (Co-Heads and Executives)
   const roster = useMemo(() => {
@@ -84,43 +88,91 @@ export function TeamView() {
     }));
   }, [teamStats]);
 
-  // Lookup handler
-  const handleLookup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const query = lookupQuery.trim();
-    if (!query) return;
+  // Search unassigned members by name, email, or member_id
+  const executeSearch = useCallback(async (queryToSearch: string) => {
+    const q = queryToSearch.trim();
+    if (!q) {
+      setSearchResults([]);
+      setHasSearched(false);
+      return;
+    }
 
     setSearching(true);
-    setSearchResult(null);
     setHasSearched(true);
     try {
-      const result = await Roles.findMember(query);
-      setSearchResult(result);
-      if (!result) {
-        showToast("No unassigned member found matching that identifier.");
-      }
+      const results = await Roles.searchUnassignedMembers(q);
+      setSearchResults(results);
     } catch (err: unknown) {
-      showToast(err instanceof Error ? err.message : "Failed to find member.");
+      setSearchResults([]);
+      showToast(err instanceof Error ? err.message : "Failed to search members.");
     } finally {
       setSearching(false);
     }
+  }, [showToast]);
+
+  // Debounced live search as user types
+  useEffect(() => {
+    if (!isHead) return;
+    const trimmed = searchQuery.trim();
+    if (!trimmed) {
+      setSearchResults([]);
+      setHasSearched(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      executeSearch(trimmed);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, isHead, executeSearch]);
+
+  const handleLookup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    executeSearch(searchQuery);
   };
 
   // Assign candidate to domain
-  const handleAssignCandidate = async () => {
-    if (!searchResult || !user?.domain) return;
-    setAssigning(true);
+  const handleAssignCandidate = async (candidate: FoundMember) => {
+    if (!user?.domain) return;
+    const targetRole = candidateRoles[candidate.id] || "executive";
+    setAssigningId(candidate.id);
     try {
-      await Roles.assignMember(searchResult.id, user.domain, selectedNewRole);
-      showToast(`Assigned ${searchResult.full_name} as ${Roles.formatDesignation(selectedNewRole)}!`);
-      setSearchResult(null);
-      setLookupQuery("");
-      setHasSearched(false);
+      await Roles.assignMember(candidate.id, user.domain, targetRole);
+      showToast(`Added ${candidate.full_name} to ${Roles.formatDomain(user.domain)} as ${Roles.formatDesignation(targetRole)}!`);
+      // Remove candidate from search and recent results
+      setSearchResults((prev) => prev.filter((m) => m.id !== candidate.id));
+      setRecentUnassigned((prev) => prev.filter((m) => m.id !== candidate.id));
       await refreshAll();
     } catch (err: unknown) {
       showToast(err instanceof Error ? err.message : "Failed to assign member.");
     } finally {
-      setAssigning(false);
+      setAssigningId(null);
+    }
+  };
+
+  // Toggle recent unassigned members list
+  const handleToggleRecent = async () => {
+    if (showRecent) {
+      setShowRecent(false);
+      return;
+    }
+    if (recentUnassigned.length > 0) {
+      setShowRecent(true);
+      return;
+    }
+    setLoadingRecent(true);
+    try {
+      const list = await Roles.getUnassignedMembers(10);
+      setRecentUnassigned(list);
+      setShowRecent(true);
+      if (list.length === 0) {
+        showToast("No unassigned members currently registered.");
+      }
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : "Failed to load unassigned members.");
+    } finally {
+      setLoadingRecent(false);
     }
   };
 
@@ -420,76 +472,344 @@ export function TeamView() {
         <div style={{ marginTop: "32px" }}>
           <h2 className="dash-section-title">Manage Team</h2>
 
-          {/* Member Exact Lookup */}
+          {/* Member Search & Add Section */}
           <div className="dash-card">
-            <h3 className="dash-section-title" style={{ fontSize: "1.15rem", marginBottom: "8px" }}>
-              Lookup & Add Member
-            </h3>
-            <p style={{ margin: "0 0 16px 0", fontSize: "0.85rem", color: "var(--dash-ink-muted)" }}>
-              Find an unassigned general member by exact email address or Member ID:
-            </p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "12px", marginBottom: "8px" }}>
+              <div>
+                <h3 className="dash-section-title" style={{ fontSize: "1.15rem", margin: "0 0 4px 0" }}>
+                  Add Member to Team
+                </h3>
+                <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--dash-ink-muted)" }}>
+                  Search for any unassigned member by name to add them to your domain team:
+                </p>
+              </div>
+              <button
+                type="button"
+                className="dash-btn dash-btn--secondary"
+                style={{ fontSize: "0.8rem", padding: "6px 12px", minHeight: "32px" }}
+                onClick={handleToggleRecent}
+                disabled={loadingRecent}
+              >
+                {loadingRecent ? (
+                  <>
+                    <span className="dash-spinner" style={{ width: "12px", height: "12px", marginRight: "6px", borderWidth: "2px" }} />
+                    Loading…
+                  </>
+                ) : showRecent ? (
+                  "Hide unassigned list"
+                ) : (
+                  <>
+                    <Users style={{ width: "13px", height: "13px", marginRight: "6px" }} />
+                    Browse unassigned members
+                  </>
+                )}
+              </button>
+            </div>
 
-            <form onSubmit={handleLookup} style={{ display: "flex", gap: "8px", flexWrap: "wrap", maxWidth: "540px" }}>
-              <input
-                type="text"
-                className="dash-input"
-                style={{ flex: 1, minWidth: "220px" }}
-                placeholder="user@example.com or ECS-2026-XXXXXX"
-                value={lookupQuery}
-                onChange={(e) => setLookupQuery(e.target.value)}
-                required
-              />
-              <button type="submit" className="dash-btn dash-btn--primary" disabled={searching}>
-                {searching ? "Searching…" : "Find Member"}
+            {/* Search Input Bar */}
+            <form onSubmit={handleLookup} style={{ display: "flex", gap: "8px", flexWrap: "wrap", maxWidth: "600px", marginTop: "14px" }}>
+              <div style={{ position: "relative", flex: 1, minWidth: "240px" }}>
+                <Search
+                  style={{
+                    position: "absolute",
+                    left: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    width: "16px",
+                    height: "16px",
+                    color: "var(--dash-ink-muted)",
+                    pointerEvents: "none",
+                  }}
+                  aria-hidden="true"
+                />
+                <input
+                  type="text"
+                  className="dash-input"
+                  style={{
+                    paddingLeft: "36px",
+                    paddingRight: searchQuery ? "34px" : "12px",
+                    height: "38px",
+                  }}
+                  placeholder="Type member's name (e.g. Aditya, Kashyap)…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search unassigned member by name"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSearchResults([]);
+                      setHasSearched(false);
+                    }}
+                    style={{
+                      position: "absolute",
+                      right: "8px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      color: "var(--dash-ink-muted)",
+                      cursor: "pointer",
+                      padding: "4px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    aria-label="Clear search"
+                  >
+                    <X style={{ width: "14px", height: "14px" }} />
+                  </button>
+                )}
+              </div>
+              <button type="submit" className="dash-btn dash-btn--primary" disabled={searching} style={{ minHeight: "38px" }}>
+                {searching ? (
+                  <>
+                    <span className="dash-spinner" style={{ width: "12px", height: "12px", marginRight: "6px", borderWidth: "2px" }} />
+                    Searching…
+                  </>
+                ) : (
+                  "Find Member"
+                )}
               </button>
             </form>
 
-            {/* Candidate Result Card */}
-            {hasSearched && searchResult && (
+            {/* Search Results List */}
+            {hasSearched && searchResults.length > 0 && (
+              <div style={{ marginTop: "18px" }}>
+                <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--dash-ink-muted)", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: "10px" }}>
+                  Matching Unassigned Members ({searchResults.length})
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {searchResults.map((candidate) => {
+                    const isAssigningThis = assigningId === candidate.id;
+                    const selectedRole = candidateRoles[candidate.id] || "executive";
+
+                    return (
+                      <div
+                        key={candidate.id}
+                        style={{
+                          padding: "12px 14px",
+                          borderRadius: "var(--dash-radius)",
+                          border: "1px solid var(--dash-border)",
+                          background: "var(--dash-surface-subtle)",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          flexWrap: "wrap",
+                          gap: "12px",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <div
+                            style={{
+                              width: "34px",
+                              height: "34px",
+                              borderRadius: "50%",
+                              background: "var(--dash-surface)",
+                              border: "1px solid var(--dash-border)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontWeight: 700,
+                              fontSize: "0.9rem",
+                              color: "var(--dash-accent)",
+                              flexShrink: 0,
+                            }}
+                          >
+                            {candidate.full_name.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+                              {candidate.full_name}
+                            </div>
+                            <div style={{ fontSize: "0.78rem", color: "var(--dash-ink-muted)", marginTop: "2px" }}>
+                              ID: {candidate.member_id || candidate.id}
+                              <span className="dash-badge dash-badge--neutral" style={{ marginLeft: "8px", fontSize: "0.68rem", padding: "1px 6px" }}>
+                                Unassigned
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <select
+                            className="dash-select"
+                            style={{ width: "125px", fontSize: "0.84rem", padding: "5px 8px" }}
+                            value={selectedRole}
+                            onChange={(e) =>
+                              setCandidateRoles((prev) => ({
+                                ...prev,
+                                [candidate.id]: e.target.value as "executive" | "co_head",
+                              }))
+                            }
+                            aria-label={`Select designation for ${candidate.full_name}`}
+                            disabled={isAssigningThis}
+                          >
+                            <option value="executive">Executive</option>
+                            <option value="co_head">Co-Head</option>
+                          </select>
+
+                          <button
+                            type="button"
+                            className="dash-btn dash-btn--primary"
+                            style={{ padding: "6px 14px", fontSize: "0.84rem", minHeight: "34px" }}
+                            disabled={isAssigningThis}
+                            onClick={() => handleAssignCandidate(candidate)}
+                          >
+                            {isAssigningThis ? (
+                              <>
+                                <span className="dash-spinner" style={{ width: "12px", height: "12px", marginRight: "6px", borderWidth: "2px" }} />
+                                Adding…
+                              </>
+                            ) : (
+                              <>
+                                <UserPlus style={{ width: "14px", height: "14px", marginRight: "6px" }} />
+                                Add to Team
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Empty State when searched and none found */}
+            {hasSearched && !searching && searchResults.length === 0 && (
               <div
                 style={{
                   marginTop: "16px",
                   padding: "16px",
                   borderRadius: "var(--dash-radius)",
-                  border: "1px solid var(--dash-border)",
+                  border: "1px dashed var(--dash-border)",
                   background: "var(--dash-surface-subtle)",
                   display: "flex",
-                  justifyContent: "space-between",
                   alignItems: "center",
-                  flexWrap: "wrap",
                   gap: "12px",
                 }}
               >
+                <UserX style={{ width: "24px", height: "24px", color: "var(--dash-ink-muted)", flexShrink: 0 }} />
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: "0.95rem" }}>
-                    {searchResult.full_name}
+                  <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                    No unassigned members found matching &ldquo;{searchQuery}&rdquo;
                   </div>
                   <div style={{ fontSize: "0.8rem", color: "var(--dash-ink-muted)", marginTop: "2px" }}>
-                    {searchResult.email ? `${searchResult.email} · ` : ""}ID: {searchResult.member_id || searchResult.id}
+                    Make sure the member has created an account and has not already been assigned to a domain.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Optional Browse Recent Unassigned Panel */}
+            {showRecent && (
+              <div style={{ marginTop: "20px", borderTop: "1px solid var(--dash-border)", paddingTop: "16px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+                  <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--dash-ink)", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Sparkles style={{ width: "14px", height: "14px", color: "var(--dash-accent)" }} />
+                    Available Unassigned Members ({recentUnassigned.length})
                   </div>
                 </div>
 
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <select
-                    className="dash-select"
-                    style={{ width: "130px" }}
-                    value={selectedNewRole}
-                    onChange={(e) => setSelectedNewRole(e.target.value as "executive" | "co_head")}
-                    aria-label="Select designation"
-                  >
-                    <option value="executive">Executive</option>
-                    <option value="co_head">Co-Head</option>
-                  </select>
+                {recentUnassigned.length === 0 ? (
+                  <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--dash-ink-muted)" }}>
+                    No unassigned members currently registered. New signups will appear here.
+                  </p>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    {recentUnassigned.map((candidate) => {
+                      const isAssigningThis = assigningId === candidate.id;
+                      const selectedRole = candidateRoles[candidate.id] || "executive";
 
-                  <button
-                    type="button"
-                    className="dash-btn dash-btn--primary"
-                    disabled={assigning}
-                    onClick={handleAssignCandidate}
-                  >
-                    {assigning ? "Assigning…" : "Assign to Domain"}
-                  </button>
-                </div>
+                      return (
+                        <div
+                          key={`recent-${candidate.id}`}
+                          style={{
+                            padding: "12px 14px",
+                            borderRadius: "var(--dash-radius)",
+                            border: "1px solid var(--dash-border)",
+                            background: "var(--dash-surface)",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                            gap: "12px",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <div
+                              style={{
+                                width: "32px",
+                                height: "32px",
+                                borderRadius: "50%",
+                                background: "var(--dash-surface-subtle)",
+                                border: "1px solid var(--dash-border)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontWeight: 700,
+                                fontSize: "0.85rem",
+                                color: "var(--dash-accent)",
+                                flexShrink: 0,
+                              }}
+                            >
+                              {candidate.full_name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div style={{ fontWeight: 600, fontSize: "0.92rem" }}>
+                                {candidate.full_name}
+                              </div>
+                              <div style={{ fontSize: "0.78rem", color: "var(--dash-ink-muted)", marginTop: "2px" }}>
+                                ID: {candidate.member_id || candidate.id}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <select
+                              className="dash-select"
+                              style={{ width: "120px", fontSize: "0.82rem", padding: "4px 8px" }}
+                              value={selectedRole}
+                              onChange={(e) =>
+                                setCandidateRoles((prev) => ({
+                                  ...prev,
+                                  [candidate.id]: e.target.value as "executive" | "co_head",
+                                }))
+                              }
+                              aria-label={`Select designation for ${candidate.full_name}`}
+                              disabled={isAssigningThis}
+                            >
+                              <option value="executive">Executive</option>
+                              <option value="co_head">Co-Head</option>
+                            </select>
+
+                            <button
+                              type="button"
+                              className="dash-btn dash-btn--primary"
+                              style={{ padding: "5px 12px", fontSize: "0.82rem", minHeight: "32px" }}
+                              disabled={isAssigningThis}
+                              onClick={() => handleAssignCandidate(candidate)}
+                            >
+                              {isAssigningThis ? (
+                                <>
+                                  <span className="dash-spinner" style={{ width: "12px", height: "12px", marginRight: "6px", borderWidth: "2px" }} />
+                                  Adding…
+                                </>
+                              ) : (
+                                <>
+                                  <UserPlus style={{ width: "13px", height: "13px", marginRight: "6px" }} />
+                                  Add
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
           </div>

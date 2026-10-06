@@ -233,15 +233,26 @@ export async function getTeamStats(): Promise<TeamStat[]> {
   return (data as TeamStat[]) || [];
 }
 
-export async function findMember(identifier: string): Promise<FoundMember | null> {
-  if (!identifier || !identifier.trim()) {
-    throw new Error("Enter an email or Member ID.");
+export async function searchUnassignedMembers(query: string): Promise<FoundMember[]> {
+  if (!query || !query.trim()) {
+    throw new Error("Enter a member name, email, or Member ID.");
   }
   const client = sb();
-  const { data, error } = await client.rpc("find_member", { identifier: identifier.trim() });
+  const { data, error } = await client.rpc("find_member", { identifier: query.trim() });
   if (error) throw friendly(error);
-  if (Array.isArray(data)) return (data[0] as FoundMember) || null;
-  return (data as FoundMember) || null;
+  return (data as FoundMember[]) || [];
+}
+
+export async function getUnassignedMembers(limitCount: number = 15): Promise<FoundMember[]> {
+  const client = sb();
+  const { data, error } = await client.rpc("get_unassigned_members", { limit_count: limitCount });
+  if (error) throw friendly(error);
+  return (data as FoundMember[]) || [];
+}
+
+export async function findMember(identifier: string): Promise<FoundMember | null> {
+  const results = await searchUnassignedMembers(identifier);
+  return results[0] || null;
 }
 
 export async function assignMember(member: string, domain: string, designation: string): Promise<any> {
@@ -284,6 +295,8 @@ export const Roles = {
   getTeamDirectory,
   getTeamStats,
   findMember,
+  searchUnassignedMembers,
+  getUnassignedMembers,
   assignMember,
   removeMember,
 };

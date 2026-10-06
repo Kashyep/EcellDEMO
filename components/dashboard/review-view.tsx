@@ -11,11 +11,22 @@ import {
   formatDate,
   formatPriorityLabel,
 } from "@/components/dashboard/task-detail-panel";
+import { fireConfetti } from "@/components/dashboard/celebrate";
+import { BorderBeam } from "@/components/ui/border-beam";
+import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
+import { ReviewListSkeleton } from "@/components/dashboard/stat-skeleton";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+} from "@/components/ui/empty";
 import type { Task } from "@/lib/types";
 
 export function ReviewView() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const reducedMotion = useReducedMotionSafe();
   const {
     domainTasks,
     directoryMap,
@@ -52,6 +63,9 @@ export function ReviewView() {
     setSubmittingTaskId(task.id);
     try {
       await Roles.reviewTask(task.id, decision, note || null);
+      if (decision === "approved") {
+        fireConfetti();
+      }
       showToast(decision === "approved" ? "Task approved!" : "Changes requested.");
       setNotes((prev) => {
         const next = { ...prev };
@@ -73,7 +87,7 @@ export function ReviewView() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
           <h1 className="dash-title" style={{ margin: 0 }}>Review Queue</h1>
           <span className="dash-badge dash-badge--accent" style={{ fontSize: "0.82rem" }}>
-            <Num value={submittedTasks.length} />
+            <Num value={submittedTasks.length} animate="slide" />
             <span style={{ fontFamily: "inherit", marginLeft: "4px" }}>Tasks Needing Review</span>
           </span>
         </div>
@@ -82,12 +96,7 @@ export function ReviewView() {
         </p>
       </header>
 
-      {loadingDomainTasks && (
-        <div className="dash-state">
-          <div className="dash-spinner" />
-          <p className="dash-state__title">Loading review queue…</p>
-        </div>
-      )}
+      {loadingDomainTasks && <ReviewListSkeleton count={2} />}
 
       {domainTasksError && (
         <div className="dash-state" style={{ borderColor: "var(--dash-err)" }}>
@@ -102,16 +111,27 @@ export function ReviewView() {
       )}
 
       {!loadingDomainTasks && !domainTasksError && submittedTasks.length === 0 && (
-        <div className="dash-card dash-state">
-          <p className="dash-state__title">Review queue is clear!</p>
-          <p className="dash-state__desc">
-            All submitted subordinate tasks have been reviewed. Good work!
-          </p>
-        </div>
+        <Empty className="dash-card border-dashed">
+          <EmptyHeader>
+            <EmptyTitle>No submissions waiting</EmptyTitle>
+            <EmptyDescription>
+              All submitted subordinate tasks have been reviewed. Good work!
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       )}
 
       {!loadingDomainTasks && !domainTasksError && submittedTasks.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div
+          className="relative rounded-xl overflow-hidden p-1"
+          style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+        >
+          {!reducedMotion && submittedTasks.length > 0 && (
+            <BorderBeam
+              colorFrom="hsl(var(--accent-hsl))"
+              colorTo="hsl(var(--accent-hsl))"
+            />
+          )}
           {submittedTasks.map((task) => {
             const assignee = directoryMap.get(task.assigned_to);
             const assigneeName = assignee ? assignee.full_name : "Team Member";

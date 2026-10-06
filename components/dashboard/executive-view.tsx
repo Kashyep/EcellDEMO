@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { useAuth } from "@/components/auth-provider";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { Num } from "@/components/num";
 import {
@@ -9,6 +10,14 @@ import {
   formatDate,
   formatStatusLabel,
 } from "@/components/dashboard/task-detail-panel";
+import { TaskListSkeleton } from "@/components/dashboard/stat-skeleton";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+} from "@/components/ui/empty";
+import { checkAndCelebrateExecutiveApprovals } from "@/components/dashboard/celebrate";
 
 const STATUS_FILTERS = [
   { id: "all", label: "All" },
@@ -20,6 +29,7 @@ const STATUS_FILTERS = [
 ] as const;
 
 export function ExecutiveView() {
+  const { user } = useAuth();
   const {
     tasks,
     directoryMap,
@@ -71,6 +81,13 @@ export function ExecutiveView() {
     return tasks.length > 0 ? tasks[0] : null;
   }, [tasks, selectedTaskId]);
 
+  // Check for newly approved tasks and celebrate
+  useEffect(() => {
+    if (user?.id && !loadingTasks && tasks.length > 0) {
+      checkAndCelebrateExecutiveApprovals(user.id, tasks);
+    }
+  }, [user?.id, loadingTasks, tasks]);
+
   return (
     <div className="dash-exec-view">
       <header style={{ marginBottom: "24px" }}>
@@ -84,28 +101,28 @@ export function ExecutiveView() {
       <div className="dash-stats-grid" role="region" aria-label="Task statistics">
         <div className="dash-stat-card">
           <span className="dash-stat-card__val">
-            <Num value={stats.total} />
+            <Num value={stats.total} animate="slide" />
           </span>
           <span className="dash-stat-card__label">Total Assigned</span>
         </div>
 
         <div className="dash-stat-card">
           <span className="dash-stat-card__val dash-stat-card__val--accent">
-            <Num value={stats.inProgress} />
+            <Num value={stats.inProgress} animate="slide" />
           </span>
           <span className="dash-stat-card__label">In Progress</span>
         </div>
 
         <div className="dash-stat-card">
           <span className="dash-stat-card__val">
-            <Num value={stats.submitted} />
+            <Num value={stats.submitted} animate="slide" />
           </span>
           <span className="dash-stat-card__label">Submitted</span>
         </div>
 
         <div className="dash-stat-card">
           <span className="dash-stat-card__val dash-stat-card__val--ok">
-            <Num value={stats.approved} />
+            <Num value={stats.approved} animate="slide" />
           </span>
           <span className="dash-stat-card__label">Approved</span>
         </div>
@@ -116,14 +133,14 @@ export function ExecutiveView() {
               stats.overdue > 0 ? "dash-stat-card__val--err" : ""
             }`}
           >
-            <Num value={stats.overdue} />
+            <Num value={stats.overdue} animate="slide" />
           </span>
           <span className="dash-stat-card__label">Overdue</span>
         </div>
 
         <div className="dash-stat-card">
           <span className="dash-stat-card__val">
-            <Num value={stats.completionRate} />
+            <Num value={stats.completionRate} animate="slide" />
             <span style={{ fontSize: "1.1rem", fontFamily: "inherit" }}>%</span>
           </span>
           <span className="dash-stat-card__label">Completion</span>
@@ -154,7 +171,7 @@ export function ExecutiveView() {
                 gap: "4px",
               }}
             >
-              <Num value={filteredTasks.length} />
+              <Num value={filteredTasks.length} animate="slide" />
               <span>tasks</span>
             </span>
           </div>
@@ -193,12 +210,7 @@ export function ExecutiveView() {
             })}
           </div>
 
-          {loadingTasks && (
-            <div className="dash-state">
-              <div className="dash-spinner" />
-              <p className="dash-state__title">Loading your tasks…</p>
-            </div>
-          )}
+          {loadingTasks && <TaskListSkeleton count={4} />}
 
           {tasksError && (
             <div className="dash-state" style={{ borderColor: "var(--dash-err)" }}>
@@ -217,14 +229,16 @@ export function ExecutiveView() {
           )}
 
           {!loadingTasks && !tasksError && filteredTasks.length === 0 && (
-            <div className="dash-card dash-state">
-              <p className="dash-state__title">No tasks found</p>
-              <p className="dash-state__desc">
-                {filter === "all"
-                  ? "When a domain lead assigns a task to you, it will appear here."
-                  : "No tasks match the selected status filter."}
-              </p>
-            </div>
+            <Empty className="dash-card border-dashed">
+              <EmptyHeader>
+                <EmptyTitle>No tasks found</EmptyTitle>
+                <EmptyDescription>
+                  {filter === "all"
+                    ? "When a domain lead assigns a task to you, it will appear here."
+                    : "No tasks match the selected status filter."}
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           )}
 
           {!loadingTasks && !tasksError && filteredTasks.length > 0 && (

@@ -38,6 +38,21 @@
     --border: 220 21% 86%;
     --input: 220 21% 86%;
     --ring: 230 100% 59%;
+    --accent-hsl: 230 100% 58%;
+    --muted-hsl: 220 20% 90%;
+    --chart-1: 230 100% 58%;
+    --chart-2: 45 96% 48%;
+    --chart-3: 150 65% 33%;
+    --chart-4: 4 64% 46%;
+    --chart-5: 223 13% 41%;
+    --sidebar-background: 220 33% 98%;
+    --sidebar-foreground: 222 38% 12%;
+    --sidebar-primary: 230 100% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 92%;
+    --sidebar-accent-foreground: 222 38% 12%;
+    --sidebar-border: 220 21% 86%;
+    --sidebar-ring: 230 100% 58%;
     color-scheme: light;
   }
 
@@ -75,6 +90,21 @@
       --border: 223 31% 22%;
       --input: 223 31% 22%;
       --ring: 232 100% 75%;
+      --accent-hsl: 232 100% 75%;
+      --muted-hsl: 223 31% 18%;
+      --chart-1: 232 100% 75%;
+      --chart-2: 45 91% 57%;
+      --chart-3: 151 51% 53%;
+      --chart-4: 5 100% 71%;
+      --chart-5: 223 16% 66%;
+      --sidebar-background: 223 39% 12%;
+      --sidebar-foreground: 224 29% 93%;
+      --sidebar-primary: 232 100% 75%;
+      --sidebar-primary-foreground: 223 45% 9%;
+      --sidebar-accent: 223 31% 18%;
+      --sidebar-accent-foreground: 224 29% 93%;
+      --sidebar-border: 223 31% 22%;
+      --sidebar-ring: 232 100% 75%;
       color-scheme: dark;
     }
   }
@@ -113,6 +143,21 @@
     --border: 223 31% 22%;
     --input: 223 31% 22%;
     --ring: 232 100% 75%;
+    --accent-hsl: 232 100% 75%;
+    --muted-hsl: 223 31% 18%;
+    --chart-1: 232 100% 75%;
+    --chart-2: 45 91% 57%;
+    --chart-3: 151 51% 53%;
+    --chart-4: 5 100% 71%;
+    --chart-5: 223 16% 66%;
+    --sidebar-background: 223 39% 12%;
+    --sidebar-foreground: 224 29% 93%;
+    --sidebar-primary: 232 100% 75%;
+    --sidebar-primary-foreground: 223 45% 9%;
+    --sidebar-accent: 223 31% 18%;
+    --sidebar-accent-foreground: 224 29% 93%;
+    --sidebar-border: 223 31% 22%;
+    --sidebar-ring: 232 100% 75%;
     color-scheme: dark;
   }
 
@@ -149,6 +194,21 @@
     --border: 220 21% 86%;
     --input: 220 21% 86%;
     --ring: 230 100% 59%;
+    --accent-hsl: 230 100% 58%;
+    --muted-hsl: 220 20% 90%;
+    --chart-1: 230 100% 58%;
+    --chart-2: 45 96% 48%;
+    --chart-3: 150 65% 33%;
+    --chart-4: 4 64% 46%;
+    --chart-5: 223 13% 41%;
+    --sidebar-background: 220 33% 98%;
+    --sidebar-foreground: 222 38% 12%;
+    --sidebar-primary: 230 100% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 92%;
+    --sidebar-accent-foreground: 222 38% 12%;
+    --sidebar-border: 220 21% 86%;
+    --sidebar-ring: 230 100% 58%;
     color-scheme: light;
   }
 }
@@ -165,4 +225,14 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-condensed), "Big Shoulders Display", sans-serif;
   }
+}
+
+/* Animated theme toggler (Magic UI) view transition */
+:root[data-magicui-theme-vt="active"]::view-transition-old(root),
+:root[data-magicui-theme-vt="active"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+:root[data-magicui-theme-vt="active"]::view-transition-new(root) {
+  clip-path: var(--magicui-theme-vt-clip-from);
 }

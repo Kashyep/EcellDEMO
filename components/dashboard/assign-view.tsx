@@ -5,6 +5,17 @@ import { useAuth } from "@/components/auth-provider";
 import { useToast } from "@/components/toast-provider";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { Roles } from "@/lib/roles";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+} from "@/components/ui/empty";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function AssignView() {
   const { user } = useAuth();
@@ -22,7 +33,23 @@ export function AssignView() {
   const [assignedTo, setAssignedTo] = useState("");
   const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
   const [dueDate, setDueDate] = useState("");
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const selectedDate = useMemo(() => {
+    if (!dueDate) return undefined;
+    const parts = dueDate.split("-").map(Number);
+    if (parts.length === 3) {
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    return undefined;
+  }, [dueDate]);
 
   const role = user ? Roles.normalizeRole(user.designation) : "co_head";
   const callerRank = user ? Roles.roleRank(user.designation) : 0;
@@ -124,12 +151,14 @@ export function AssignView() {
       )}
 
       {!loadingDirectory && !directoryError && eligibleSubordinates.length === 0 && (
-        <div className="dash-card dash-state">
-          <p className="dash-state__title">No eligible subordinates found</p>
-          <p className="dash-state__desc">
-            You must have subordinates in your domain before you can assign tasks.
-          </p>
-        </div>
+        <Empty className="dash-card border-dashed">
+          <EmptyHeader>
+            <EmptyTitle>No eligible subordinates found</EmptyTitle>
+            <EmptyDescription>
+              You must have subordinates in your domain before you can assign tasks.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       )}
 
       {!loadingDirectory && !directoryError && eligibleSubordinates.length > 0 && (
@@ -214,16 +243,55 @@ export function AssignView() {
               </div>
 
               <div className="dash-form-group" style={{ margin: 0 }}>
-                <label htmlFor="task-due" className="dash-label">
+                <label id="task-due-label" htmlFor="task-due-trigger" className="dash-label">
                   Due Date <span style={{ color: "var(--dash-ink-muted)", fontSize: "0.78rem" }}>(optional)</span>
                 </label>
                 <input
-                  type="date"
+                  type="hidden"
                   id="task-due"
-                  className="dash-input"
+                  name="due_date"
                   value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
                 />
+                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                  <PopoverTrigger
+                    id="task-due-trigger"
+                    aria-labelledby="task-due-label"
+                    className={cn(
+                      buttonVariants({ variant: "outline" }),
+                      "w-full justify-start text-left font-normal h-[38px] px-3",
+                      !dueDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                    {selectedDate ? (
+                      selectedDate.toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    ) : (
+                      <span>Pick a due date</span>
+                    )}
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={(date) => {
+                        if (date) {
+                          const y = date.getFullYear();
+                          const m = String(date.getMonth() + 1).padStart(2, "0");
+                          const d = String(date.getDate()).padStart(2, "0");
+                          setDueDate(`${y}-${m}-${d}`);
+                        } else {
+                          setDueDate("");
+                        }
+                        setPopoverOpen(false);
+                      }}
+                      disabled={{ before: today }}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 

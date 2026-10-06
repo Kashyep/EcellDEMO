@@ -1,12 +1,35 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useAuth } from "@/components/auth-provider";
 import { useToast } from "@/components/toast-provider";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { Roles } from "@/lib/roles";
 import { Num } from "@/components/num";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { Progress } from "@/components/ui/progress";
+import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
+import { TableSkeleton } from "@/components/dashboard/stat-skeleton";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+} from "@/components/ui/empty";
 import type { TeamStat, DirectoryMember, FoundMember } from "@/lib/types";
+
+const teamChartConfig: ChartConfig = {
+  rate: {
+    label: "Completion %",
+    color: "hsl(var(--chart-1))",
+  },
+};
 
 export function TeamView() {
   const { user } = useAuth();
@@ -49,6 +72,15 @@ export function TeamView() {
 
   const executiveStats = useMemo(() => {
     return teamStats.filter((m) => Roles.normalizeRole(m.designation) === "executive");
+  }, [teamStats]);
+
+  const reducedMotion = useReducedMotionSafe();
+
+  const teamCompletionData = useMemo(() => {
+    return teamStats.map((m) => ({
+      name: m.full_name,
+      rate: Math.round(Number(m.completion_rate) || 0),
+    }));
   }, [teamStats]);
 
   // Lookup handler
@@ -131,9 +163,14 @@ export function TeamView() {
         </h3>
 
         {statsList.length === 0 ? (
-          <p style={{ margin: 0, fontSize: "0.88rem", color: "var(--dash-ink-muted)" }}>
-            No members in this category.
-          </p>
+          <Empty className="dash-card border-dashed">
+            <EmptyHeader>
+              <EmptyTitle>No team members yet</EmptyTitle>
+              <EmptyDescription>
+                No members currently in this category.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <>
             {/* Desktop Table (>= 640px) */}
@@ -168,26 +205,35 @@ export function TeamView() {
                         </td>
                         <td>{Roles.formatDesignation(m.designation)}</td>
                         <td>
-                          <Num value={m.todo || 0} />
+                          <Num value={m.todo || 0} animate="slide" />
                         </td>
                         <td>
-                          <Num value={m.in_progress || 0} />
+                          <Num value={m.in_progress || 0} animate="slide" />
                         </td>
                         <td>
-                          <Num value={m.submitted || 0} />
+                          <Num value={m.submitted || 0} animate="slide" />
                         </td>
                         <td style={{ color: "var(--dash-ok)", fontWeight: 600 }}>
-                          <Num value={m.approved || 0} />
+                          <Num value={m.approved || 0} animate="slide" />
                         </td>
                         <td style={{ color: hasOverdue ? "var(--dash-err)" : "inherit", fontWeight: hasOverdue ? 700 : 400 }}>
-                          <Num value={m.overdue || 0} />
+                          <Num value={m.overdue || 0} animate="slide" />
                         </td>
                         <td>
-                          <Num value={m.total || 0} />
+                          <Num value={m.total || 0} animate="slide" />
                         </td>
-                        <td>
-                          <Num value={rateVal} />
-                          <span style={{ fontSize: "0.8rem", fontFamily: "inherit" }}>%</span>
+                        <td style={{ minWidth: "140px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <Progress
+                              value={rateVal}
+                              aria-label={`${m.full_name} completion`}
+                              style={{ flex: 1, minWidth: "50px" }}
+                            />
+                            <span style={{ display: "inline-flex", alignItems: "center", whiteSpace: "nowrap" }}>
+                              <Num value={rateVal} animate="slide" />
+                              <span style={{ fontSize: "0.8rem", fontFamily: "inherit" }}>%</span>
+                            </span>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -222,25 +268,25 @@ export function TeamView() {
                       <div className="dash-team-card__stat">
                         <span className="dash-team-card__stat-label">Assigned</span>
                         <span className="dash-team-card__stat-num">
-                          <Num value={m.todo || 0} />
+                          <Num value={m.todo || 0} animate="slide" />
                         </span>
                       </div>
                       <div className="dash-team-card__stat">
                         <span className="dash-team-card__stat-label">In Progress</span>
                         <span className="dash-team-card__stat-num">
-                          <Num value={m.in_progress || 0} />
+                          <Num value={m.in_progress || 0} animate="slide" />
                         </span>
                       </div>
                       <div className="dash-team-card__stat">
                         <span className="dash-team-card__stat-label">Submitted</span>
                         <span className="dash-team-card__stat-num">
-                          <Num value={m.submitted || 0} />
+                          <Num value={m.submitted || 0} animate="slide" />
                         </span>
                       </div>
                       <div className="dash-team-card__stat">
                         <span className="dash-team-card__stat-label">Completed</span>
                         <span className="dash-team-card__stat-num" style={{ color: "var(--dash-ok)", fontWeight: 600 }}>
-                          <Num value={completedVal} />
+                          <Num value={completedVal} animate="slide" />
                         </span>
                       </div>
                       <div className="dash-team-card__stat">
@@ -252,15 +298,22 @@ export function TeamView() {
                             fontWeight: hasOverdue ? 700 : 400,
                           }}
                         >
-                          <Num value={m.overdue || 0} />
+                          <Num value={m.overdue || 0} animate="slide" />
                         </span>
                       </div>
                       <div className="dash-team-card__stat">
                         <span className="dash-team-card__stat-label">Completion%</span>
-                        <span className="dash-team-card__stat-num">
-                          <Num value={rateVal} />
-                          <span style={{ fontSize: "0.8rem", fontFamily: "inherit" }}>%</span>
-                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "2px" }}>
+                          <Progress
+                            value={rateVal}
+                            aria-label={`${m.full_name} completion`}
+                            style={{ width: "50px" }}
+                          />
+                          <span className="dash-team-card__stat-num" style={{ display: "inline-flex", alignItems: "center" }}>
+                            <Num value={rateVal} animate="slide" />
+                            <span style={{ fontSize: "0.8rem", fontFamily: "inherit" }}>%</span>
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -285,12 +338,7 @@ export function TeamView() {
       </header>
 
       {/* Loading States */}
-      {loadingTeamStats && (
-        <div className="dash-state" style={{ marginBottom: "20px" }}>
-          <div className="dash-spinner" />
-          <p className="dash-state__title">Loading team stats…</p>
-        </div>
-      )}
+      {loadingTeamStats && <TableSkeleton rows={4} />}
 
       {teamStatsError && (
         <div className="dash-state" style={{ borderColor: "var(--dash-err)", marginBottom: "20px" }}>
@@ -301,6 +349,57 @@ export function TeamView() {
           <button type="button" className="dash-btn dash-btn--secondary" onClick={refreshTeamStats}>
             Retry
           </button>
+        </div>
+      )}
+
+      {/* Horizontal Bar Chart: Completion % per Member */}
+      {!loadingTeamStats && !teamStatsError && teamCompletionData.length > 0 && (
+        <div className="dash-card" style={{ marginBottom: "24px" }}>
+          <figure aria-label="Team completion overview chart">
+            <figcaption className="sr-only">
+              Team completion overview: {teamCompletionData.map((d) => `${d.name}: ${d.rate}%`).join(", ")}.
+            </figcaption>
+            <h2 className="dash-section-title" style={{ fontSize: "1.15rem", marginBottom: "14px" }}>
+              Team Completion Breakdown
+            </h2>
+            <ChartContainer
+              config={teamChartConfig}
+              className="w-full"
+              style={{ minHeight: `${Math.max(140, teamCompletionData.length * 36)}px`, maxHeight: "320px" }}
+            >
+              <BarChart
+                accessibilityLayer
+                data={teamCompletionData}
+                layout="vertical"
+                margin={{ top: 8, right: 24, left: 16, bottom: 8 }}
+              >
+                <CartesianGrid horizontal={false} strokeDasharray="3 3" opacity={0.25} />
+                <XAxis
+                  type="number"
+                  domain={[0, 100]}
+                  unit="%"
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={11}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={11}
+                  width={110}
+                />
+                <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                <Bar
+                  dataKey="rate"
+                  fill="var(--chart-color-rate, hsl(var(--chart-1)))"
+                  radius={[0, 4, 4, 0]}
+                  isAnimationActive={!reducedMotion}
+                />
+              </BarChart>
+            </ChartContainer>
+          </figure>
         </div>
       )}
 
@@ -425,9 +524,14 @@ export function TeamView() {
             )}
 
             {!loadingDirectory && !directoryError && roster.length === 0 && (
-              <p style={{ margin: 0, fontSize: "0.88rem", color: "var(--dash-ink-muted)" }}>
-                No subordinates currently in your domain roster. Use the search above to add executives or co-heads.
-              </p>
+              <Empty className="dash-card border-dashed">
+                <EmptyHeader>
+                  <EmptyTitle>No team members yet</EmptyTitle>
+                  <EmptyDescription>
+                    No subordinates currently in your domain roster. Use the search above to add executives or co-heads.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             )}
 
             {!loadingDirectory && !directoryError && roster.length > 0 && (

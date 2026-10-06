@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useAuth } from "@/components/auth-provider";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { Roles } from "@/lib/roles";
@@ -11,6 +12,27 @@ import {
   formatDate,
   formatStatusLabel,
 } from "@/components/dashboard/task-detail-panel";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
+import { StatGridSkeleton } from "@/components/dashboard/stat-skeleton";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+} from "@/components/ui/empty";
+
+const statusChartConfig: ChartConfig = {
+  count: {
+    label: "Tasks",
+    color: "hsl(var(--chart-1))",
+  },
+};
 
 export function SeniorDashboardView() {
   const { user } = useAuth();
@@ -64,6 +86,16 @@ export function SeniorDashboardView() {
     };
   }, [domainTasks]);
 
+  const reducedMotion = useReducedMotionSafe();
+
+  const statusChartData = useMemo(() => [
+    { status: "Todo", count: domainMetrics.todo },
+    { status: "In Prog", count: domainMetrics.inProgress },
+    { status: "Review", count: domainMetrics.submitted },
+    { status: "Changes", count: domainMetrics.changesRequested },
+    { status: "Approved", count: domainMetrics.approved },
+  ], [domainMetrics]);
+
   // Overdue tasks list in domain
   const overdueTasks = useMemo(() => {
     return domainTasks.filter((t) => isOverdue(t.due_date, t.status));
@@ -107,18 +139,13 @@ export function SeniorDashboardView() {
 
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <span className="dash-badge dash-badge--accent">
-              <Num value={domainMetrics.completionRate} />
+              <Num value={domainMetrics.completionRate} animate="slide" />
               <span style={{ fontFamily: "inherit", marginLeft: "2px" }}>% Overall Completion</span>
             </span>
           </div>
         </div>
 
-        {loadingDomainTasks && (
-          <div className="dash-state">
-            <div className="dash-spinner" />
-            <p className="dash-state__title">Loading domain metrics…</p>
-          </div>
-        )}
+        {loadingDomainTasks && <StatGridSkeleton count={7} />}
 
         {domainTasksError && (
           <div className="dash-state" style={{ borderColor: "var(--dash-err)" }}>
@@ -137,60 +164,115 @@ export function SeniorDashboardView() {
         )}
 
         {!loadingDomainTasks && !domainTasksError && (
-          <div className="dash-stats-grid" style={{ marginBottom: 0 }}>
-            <div className="dash-stat-card">
-              <span className="dash-stat-card__val">
-                <Num value={domainMetrics.total} />
-              </span>
-              <span className="dash-stat-card__label">Total Tasks</span>
+          <>
+            <div className="dash-stats-grid" style={{ marginBottom: 0 }}>
+              <div className="dash-stat-card">
+                <span className="dash-stat-card__val">
+                  <Num value={domainMetrics.total} animate="slide" />
+                </span>
+                <span className="dash-stat-card__label">Total Tasks</span>
+              </div>
+
+              <div className="dash-stat-card">
+                <span className="dash-stat-card__val dash-stat-card__val--ok">
+                  <Num value={domainMetrics.approved} animate="slide" />
+                </span>
+                <span className="dash-stat-card__label">Approved</span>
+              </div>
+
+              <div className="dash-stat-card">
+                <span className="dash-stat-card__val dash-stat-card__val--accent">
+                  <Num value={domainMetrics.inProgress} animate="slide" />
+                </span>
+                <span className="dash-stat-card__label">In Progress</span>
+              </div>
+
+              <div className="dash-stat-card">
+                <span className="dash-stat-card__val">
+                  <Num value={domainMetrics.submitted} animate="slide" />
+                </span>
+                <span className="dash-stat-card__label">In Review</span>
+              </div>
+
+              <div className="dash-stat-card">
+                <span className="dash-stat-card__val">
+                  <Num value={domainMetrics.changesRequested} animate="slide" />
+                </span>
+                <span className="dash-stat-card__label">Changes Req.</span>
+              </div>
+
+              <div className="dash-stat-card">
+                <span className="dash-stat-card__val">
+                  <Num value={domainMetrics.todo} animate="slide" />
+                </span>
+                <span className="dash-stat-card__label">Todo</span>
+              </div>
+
+              <div className="dash-stat-card">
+                <span
+                  className={`dash-stat-card__val ${
+                    domainMetrics.overdue > 0 ? "dash-stat-card__val--err" : ""
+                  }`}
+                >
+                  <Num value={domainMetrics.overdue} animate="slide" />
+                </span>
+                <span className="dash-stat-card__label">Overdue</span>
+              </div>
             </div>
 
-            <div className="dash-stat-card">
-              <span className="dash-stat-card__val dash-stat-card__val--ok">
-                <Num value={domainMetrics.approved} />
-              </span>
-              <span className="dash-stat-card__label">Approved</span>
-            </div>
-
-            <div className="dash-stat-card">
-              <span className="dash-stat-card__val dash-stat-card__val--accent">
-                <Num value={domainMetrics.inProgress} />
-              </span>
-              <span className="dash-stat-card__label">In Progress</span>
-            </div>
-
-            <div className="dash-stat-card">
-              <span className="dash-stat-card__val">
-                <Num value={domainMetrics.submitted} />
-              </span>
-              <span className="dash-stat-card__label">In Review</span>
-            </div>
-
-            <div className="dash-stat-card">
-              <span className="dash-stat-card__val">
-                <Num value={domainMetrics.changesRequested} />
-              </span>
-              <span className="dash-stat-card__label">Changes Req.</span>
-            </div>
-
-            <div className="dash-stat-card">
-              <span className="dash-stat-card__val">
-                <Num value={domainMetrics.todo} />
-              </span>
-              <span className="dash-stat-card__label">Todo</span>
-            </div>
-
-            <div className="dash-stat-card">
-              <span
-                className={`dash-stat-card__val ${
-                  domainMetrics.overdue > 0 ? "dash-stat-card__val--err" : ""
-                }`}
+            {/* Accessible Tasks by status BarChart */}
+            <figure
+              style={{
+                marginTop: "20px",
+                paddingTop: "16px",
+                borderTop: "1px solid var(--dash-border)",
+              }}
+              aria-label="Tasks by status chart"
+            >
+              <figcaption className="sr-only">
+                Tasks by status: {domainMetrics.todo} todo, {domainMetrics.inProgress} in progress, {domainMetrics.submitted} in review, {domainMetrics.changesRequested} changes requested, and {domainMetrics.approved} approved.
+              </figcaption>
+              <div
+                style={{
+                  marginBottom: "8px",
+                  fontWeight: 600,
+                  fontSize: "0.85rem",
+                  color: "var(--dash-ink)",
+                }}
               >
-                <Num value={domainMetrics.overdue} />
-              </span>
-              <span className="dash-stat-card__label">Overdue</span>
-            </div>
-          </div>
+                Tasks by status
+              </div>
+              <ChartContainer config={statusChartConfig} className="min-h-[160px] w-full max-h-[200px]">
+                <BarChart
+                  accessibilityLayer
+                  data={statusChartData}
+                  margin={{ top: 8, right: 8, left: -20, bottom: 0 }}
+                >
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.25} />
+                  <XAxis
+                    dataKey="status"
+                    tickLine={false}
+                    tickMargin={8}
+                    axisLine={false}
+                    fontSize={11}
+                  />
+                  <YAxis
+                    allowDecimals={false}
+                    tickLine={false}
+                    axisLine={false}
+                    fontSize={11}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                  <Bar
+                    dataKey="count"
+                    fill="var(--chart-color-count, hsl(var(--chart-1)))"
+                    radius={4}
+                    isAnimationActive={!reducedMotion}
+                  />
+                </BarChart>
+              </ChartContainer>
+            </figure>
+          </>
         )}
       </div>
 
@@ -255,12 +337,14 @@ export function SeniorDashboardView() {
         <h2 className="dash-section-title">My Assigned Tasks</h2>
 
         {tasks.length === 0 ? (
-          <div className="dash-card dash-state">
-            <p className="dash-state__title">No personal tasks assigned</p>
-            <p className="dash-state__desc">
-              You do not have any tasks directly assigned to you at this time.
-            </p>
-          </div>
+          <Empty className="dash-card border-dashed">
+            <EmptyHeader>
+              <EmptyTitle>No personal tasks assigned</EmptyTitle>
+              <EmptyDescription>
+                You do not have any tasks directly assigned to you at this time.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <div className="dash-two-col">
             {/* List */}

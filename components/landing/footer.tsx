@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { TextHoverEffect } from "@/components/ui/text-hover-effect";
 
 export function LandingFooter() {
   const [timeStr, setTimeStr] = useState<string>("--:--:--");
@@ -177,11 +178,12 @@ export function LandingFooter() {
           </nav>
         </div>
 
-        {/* Wordmark Graphic Banner: white with E-CELL SMVIT name */}
-        <div className="pt-6 border-t border-border/40 select-none overflow-hidden" aria-hidden="true">
-          <p className="font-heading font-black text-center text-4xl sm:text-6xl md:text-8xl lg:text-9xl tracking-tight text-foreground/15 dark:text-foreground/20 uppercase whitespace-nowrap">
-            E-CELL SMVIT
-          </p>
+        {/* Wordmark Graphic Banner: TextHoverEffect wordmark replacing the static wordmark */}
+        <div
+          className="pt-6 border-t border-border/40 select-none overflow-hidden h-32 sm:h-48 md:h-64 flex items-center justify-center"
+          aria-hidden="true"
+        >
+          <TextHoverEffect text="E-CELL" />
         </div>
 
         {/* Base Copyright */}

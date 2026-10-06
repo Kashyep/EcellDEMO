@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Archivo, Big_Shoulders_Display, IBM_Plex_Mono, IBM_Plex_Sans, Silkscreen } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ToastProvider } from "@/components/toast-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/auth-provider";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -71,11 +71,10 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-[var(--bg)] text-[var(--ink)] font-sans antialiased">
         <ThemeProvider>
-          <ToastProvider>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-          </ToastProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+          <Toaster position="bottom-right" />
         </ThemeProvider>
       </body>
     </html>

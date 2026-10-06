@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 
+import plugin from "tailwindcss/plugin";
 const config: Config = {
   darkMode: ["class", '[data-theme="dark"]'],
   content: [
@@ -36,12 +37,29 @@ const config: Config = {
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
+          DEFAULT: "hsl(var(--muted-hsl))",
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT: "hsl(var(--accent-hsl))",
           foreground: "hsl(var(--accent-foreground))",
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
+        },
+        chart: {
+          1: "hsl(var(--chart-1))",
+          2: "hsl(var(--chart-2))",
+          3: "hsl(var(--chart-3))",
+          4: "hsl(var(--chart-4))",
+          5: "hsl(var(--chart-5))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -96,9 +114,39 @@ const config: Config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      ringWidth: {
+        3: "3px",
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    // Tailwind 3 equivalents of the Tailwind 4 variants/utilities used by the
+    // generated shadcn (base-nova) components.
+    plugin(({ addVariant, matchVariant, addUtilities }) => {
+      for (const state of [
+        "open",
+        "closed",
+        "active",
+        "selected",
+        "disabled",
+        "vertical",
+        "horizontal",
+        "starting-style",
+        "ending-style",
+      ]) {
+        addVariant(`data-${state}`, `&[data-${state}]`);
+      }
+      matchVariant("in-data", (value) => `:where([data-${value}]) &`);
+      matchVariant("has-data", (value) => `&:has([data-${value}])`);
+      addUtilities({
+        ".outline-hidden": {
+          outline: "2px solid transparent",
+          "outline-offset": "2px",
+        },
+      });
+    }),
+  ],
 };
 
 export default config;

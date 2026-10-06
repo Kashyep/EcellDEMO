@@ -6,8 +6,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { DashboardSearch } from "@/components/dashboard/command-palette";
 
 /**
- * The dashboard's top row: sidebar toggle + page title on the left, wide search +
- * theme toggle on the right, on the page background (no separate header strip).
+ * The dashboard's top row: page title on the left, wide search + theme toggle on the
+ * right, on the page background. The sidebar never collapses on desktop; the menu
+ * button is only rendered on phones, where the sidebar is an off-canvas sheet.
  */
 export function DashboardPageHeader({
   title,
@@ -22,7 +23,7 @@ export function DashboardPageHeader({
   return (
     <header className="mb-6 flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
       <div className="flex min-w-0 items-start gap-2">
-        <SidebarTrigger className="mt-1 shrink-0" />
+        <SidebarTrigger className="mt-1 shrink-0 md:hidden" aria-label="Open navigation" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="dash-title" style={{ margin: 0 }}>

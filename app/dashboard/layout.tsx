@@ -48,7 +48,8 @@ export default function DashboardLayout({
   return (
     <DashboardProvider>
       <CommandPaletteProvider>
-        <SidebarProvider className="dash-shell motion-reduce:transition-none">
+        {/* Always expanded on desktop (no collapse control); phones use the sheet. */}
+        <SidebarProvider open className="dash-shell motion-reduce:transition-none">
           <DashboardSidebar />
           <SidebarInset className="bg-transparent motion-reduce:transition-none">
             <main className="dash-main" id="main-content" tabIndex={-1}>

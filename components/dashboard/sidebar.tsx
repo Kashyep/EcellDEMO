@@ -16,6 +16,7 @@ import { Roles } from "@/lib/roles";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { Num } from "@/components/num";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
@@ -27,7 +28,6 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
 
@@ -90,26 +90,22 @@ export function DashboardSidebar() {
   ];
 
   return (
-    <Sidebar variant="floating" collapsible="icon" className="motion-reduce:transition-none">
-      <SidebarHeader className="border-b border-sidebar-border/50 p-2.5">
-        <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2.5 overflow-hidden text-sidebar-foreground"
-            onClick={handleNavClick}
-          >
-            <img
-              src={theme === "dark" ? "/img/logo-white.png" : "/img/logo-black.svg"}
-              alt=""
-              width={26}
-              height={26}
-              className="size-[26px] shrink-0 object-contain"
-            />
-            <span className="font-condensed text-xl font-bold uppercase tracking-tight group-data-[collapsible=icon]:hidden">
-              E-CELL SMVIT
-            </span>
-          </Link>
-        </div>
+    <Sidebar variant="floating" collapsible="offcanvas" className="motion-reduce:transition-none">
+      <SidebarHeader className="px-4 pb-2 pt-4">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2.5 overflow-hidden text-sidebar-foreground"
+          onClick={handleNavClick}
+        >
+          <img
+            src={theme === "dark" ? "/img/logo-white.png" : "/img/logo-black.svg"}
+            alt=""
+            width={22}
+            height={22}
+            className="size-[22px] shrink-0 object-contain"
+          />
+          <span className="font-condensed text-lg font-bold uppercase tracking-tight">E-CELL SMVIT</span>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent>
@@ -130,7 +126,10 @@ export function DashboardSidebar() {
                           />
                         }
                         isActive={isActive}
-                        tooltip={item.title}
+                        className={cn(
+                          "h-9 text-muted-foreground hover:text-sidebar-foreground",
+                          "data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-foreground"
+                        )}
                       >
                         <item.icon className="size-4 shrink-0" />
                         <span>{item.title}</span>
@@ -151,41 +150,31 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border/50 p-2.5">
-        {user && (
-          <div className="flex flex-col gap-0.5 overflow-hidden group-data-[collapsible=icon]:hidden">
-            <span
-              className="truncate text-sm font-semibold text-sidebar-foreground"
-              title={user.name}
-            >
-              {user.name}
-            </span>
-            <span className="truncate text-xs font-medium text-primary">
-              {formattedRole}
-            </span>
-            <span className="truncate text-[11px] text-muted-foreground font-sans">
-              ID: {user.memberId || "Pending"}
-            </span>
-          </div>
-        )}
-
-        <div className="flex items-center gap-2 pt-1 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
+      <SidebarFooter className="p-3">
+        <div className="flex items-center gap-2">
+          {user && (
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className="truncate text-sm font-medium text-sidebar-foreground" title={user.name}>
+                {user.name}
+              </span>
+              <span className="truncate text-xs text-muted-foreground">
+                {formattedRole} · {user.memberId || "ID pending"}
+              </span>
+            </div>
+          )}
           <Button
-            variant="outline"
-            size="sm"
+            variant="ghost"
+            size="icon-sm"
             type="button"
-            className="w-full justify-start gap-2 text-xs group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center"
+            className="shrink-0 text-muted-foreground hover:text-foreground"
             onClick={handleLogout}
-            aria-label="Log out of E-Cell dashboard"
+            aria-label="Log out"
             title="Log out"
           >
-            <LogOut className="size-3.5 shrink-0" />
-            <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+            <LogOut className="size-4" />
           </Button>
         </div>
       </SidebarFooter>
-
-      <SidebarRail />
     </Sidebar>
   );
 }

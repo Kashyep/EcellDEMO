@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" fill="none">
+  <rect width="800" height="600" fill="#0f172a"/>
+  <defs>
+    <pattern id="grid-es" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="grad-esummit" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#grid-es)"/>
+  <rect width="800" height="600" fill="url(#grad-esummit)"/>
+  <rect x="40" y="40" width="720" height="520" rx="16" stroke="#334155" stroke-width="2" stroke-dasharray="6 6"/>
+  
+  <!-- Icon: Stage / Mic / Expo -->
+  <g transform="translate(360, 160)">
+    <circle cx="40" cy="40" r="48" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/>
+    <path d="M40 22 C34 22 30 26 30 32 L30 46 C30 52 34 56 40 56 C46 56 50 52 50 46 L50 32 C50 26 46 22 40 22 Z" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+    <path d="M24 40 C24 50 31 58 40 58 C49 58 56 50 56 40" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <line x1="40" y1="58" x2="40" y2="70" stroke="#8b5cf6" stroke-width="2.5"/>
+  </g>
+
+  <!-- Labels -->
+  <rect x="310" y="275" width="180" height="32" rx="16" fill="#7c3aed" fill-opacity="0.2" stroke="#8b5cf6" stroke-width="1.5"/>
+  <text x="400" y="296" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#8b5cf6" letter-spacing="1.5">PLACEHOLDER</text>
+  
+  <text x="400" y="360" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="800" fill="#f8fafc" letter-spacing="-0.5">E-Summit &amp; Expo</text>
+  <text x="400" y="400" text-anchor="middle" font-family="'IBM Plex Mono', monospace, monospace" font-size="15" fill="#94a3b8">public/img/gallery/esummit-expo.svg</text>
+  
+  <rect x="180" y="435" width="440" height="42" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="400" y="461" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#cbd5e1">Requested: Keynote, panel discussion &amp; startup exhibition photo</text>
+</svg>

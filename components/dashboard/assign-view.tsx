@@ -1,0 +1,245 @@
+"use client";
+
+import React, { useState, useMemo } from "react";
+import { useAuth } from "@/components/auth-provider";
+import { useToast } from "@/components/toast-provider";
+import { useDashboard } from "@/components/dashboard/dashboard-context";
+import { Roles } from "@/lib/roles";
+
+export function AssignView() {
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  const {
+    directory,
+    loadingDirectory,
+    directoryError,
+    refreshAll,
+    refreshDirectory,
+  } = useDashboard();
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [assignedTo, setAssignedTo] = useState("");
+  const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
+  const [dueDate, setDueDate] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const role = user ? Roles.normalizeRole(user.designation) : "co_head";
+  const callerRank = user ? Roles.roleRank(user.designation) : 0;
+
+  // Filter eligible subordinates in the same domain
+  const eligibleSubordinates = useMemo(() => {
+    return directory.filter((m) => {
+      if (m.id === user?.id) return false;
+      if (m.domain && user?.domain && m.domain.toLowerCase() !== user.domain.toLowerCase()) return false;
+      const rank = Roles.roleRank(m.designation);
+      if (callerRank <= rank || rank <= 0) return false;
+
+      const norm = Roles.normalizeRole(m.designation);
+      if (role === "co_head") {
+        return norm === "executive";
+      }
+      return norm === "executive" || norm === "co_head";
+    });
+  }, [directory, user, callerRank, role]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanTitle = title.trim();
+    if (!cleanTitle) {
+      showToast("Task title is required.");
+      return;
+    }
+    if (cleanTitle.length > 120) {
+      showToast("Task title cannot exceed 120 characters.");
+      return;
+    }
+    if (!assignedTo) {
+      showToast("Please choose an assignee.");
+      return;
+    }
+    const cleanDesc = description.trim();
+    if (cleanDesc.length > 2000) {
+      showToast("Task description cannot exceed 2000 characters.");
+      return;
+    }
+
+    if (!user?.domain) {
+      showToast("You must belong to a domain to assign tasks.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await Roles.createTask({
+        title: cleanTitle,
+        description: cleanDesc || null,
+        assigned_to: assignedTo,
+        assigned_by: user.id,
+        domain: user.domain,
+        priority,
+        due_date: dueDate || null,
+      });
+
+      showToast("Task assigned successfully!");
+      setTitle("");
+      setDescription("");
+      setAssignedTo("");
+      setPriority("medium");
+      setDueDate("");
+      await refreshAll();
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : "Failed to assign task.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="dash-assign-view">
+      <header style={{ marginBottom: "24px" }}>
+        <h1 className="dash-title">Assign New Task</h1>
+        <p className="dash-subtitle">
+          Create and assign tasks to domain team members with deadlines and priorities.
+        </p>
+      </header>
+
+      {loadingDirectory && (
+        <div className="dash-state">
+          <div className="dash-spinner" />
+          <p className="dash-state__title">Loading assignable members…</p>
+        </div>
+      )}
+
+      {directoryError && (
+        <div className="dash-state" style={{ borderColor: "var(--dash-err)" }}>
+          <p className="dash-state__title" style={{ color: "var(--dash-err)" }}>
+            Failed to load members
+          </p>
+          <p className="dash-state__desc">{directoryError}</p>
+          <button type="button" className="dash-btn dash-btn--secondary" onClick={refreshDirectory}>
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!loadingDirectory && !directoryError && eligibleSubordinates.length === 0 && (
+        <div className="dash-card dash-state">
+          <p className="dash-state__title">No eligible subordinates found</p>
+          <p className="dash-state__desc">
+            You must have subordinates in your domain before you can assign tasks.
+          </p>
+        </div>
+      )}
+
+      {!loadingDirectory && !directoryError && eligibleSubordinates.length > 0 && (
+        <div className="dash-card" style={{ maxWidth: "680px" }}>
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {/* Title (maxlength 120) */}
+            <div className="dash-form-group" style={{ margin: 0 }}>
+              <label htmlFor="task-title" className="dash-label">
+                Task Title * <span style={{ color: "var(--dash-ink-muted)", fontSize: "0.78rem" }}>(max 120 chars)</span>
+              </label>
+              <input
+                type="text"
+                id="task-title"
+                className="dash-input"
+                required
+                maxLength={120}
+                placeholder="e.g. Build hackathon registration API"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
+
+            {/* Description (maxlength 2000) */}
+            <div className="dash-form-group" style={{ margin: 0 }}>
+              <label htmlFor="task-desc" className="dash-label">
+                Description <span style={{ color: "var(--dash-ink-muted)", fontSize: "0.78rem" }}>(optional, max 2000 chars)</span>
+              </label>
+              <textarea
+                id="task-desc"
+                className="dash-textarea"
+                rows={4}
+                maxLength={2000}
+                placeholder="Provide task acceptance criteria, constraints, or links…"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+
+            {/* Assignee */}
+            <div className="dash-form-group" style={{ margin: 0 }}>
+              <label htmlFor="task-assignee" className="dash-label">
+                Assignee *
+              </label>
+              <select
+                id="task-assignee"
+                className="dash-select"
+                required
+                value={assignedTo}
+                onChange={(e) => setAssignedTo(e.target.value)}
+              >
+                <option value="">Select subordinate member…</option>
+                {eligibleSubordinates.map((sub) => (
+                  <option key={sub.id} value={sub.id}>
+                    {sub.full_name} ({Roles.formatDesignation(sub.designation)})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Priority & Due Date Row */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: "16px",
+              }}
+            >
+              <div className="dash-form-group" style={{ margin: 0 }}>
+                <label htmlFor="task-priority" className="dash-label">
+                  Priority
+                </label>
+                <select
+                  id="task-priority"
+                  className="dash-select"
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+
+              <div className="dash-form-group" style={{ margin: 0 }}>
+                <label htmlFor="task-due" className="dash-label">
+                  Due Date <span style={{ color: "var(--dash-ink-muted)", fontSize: "0.78rem" }}>(optional)</span>
+                </label>
+                <input
+                  type="date"
+                  id="task-due"
+                  className="dash-input"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Submit button */}
+            <div style={{ marginTop: "8px" }}>
+              <button
+                type="submit"
+                className="dash-btn dash-btn--primary"
+                disabled={submitting}
+              >
+                {submitting ? "Assigning…" : "Assign Task"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}

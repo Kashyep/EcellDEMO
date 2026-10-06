@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: #eef0f5;
+    --surface: #f9fafc;
+    --ink: #131a2b;
+    --muted: #5a6276;
+    --line: #d3d8e3;
+    --grid: rgba(43, 76, 255, 0.07);
+    --accent: #2b4cff;
+    --accent-ink: #ffffff;
+    --mark: #f2b705;
+    --mark-ink: #1b1400;
+    --ok: #1d8a54;
+    --err: #c2362b;
+    --panel: #131a2b;
+    --panel-fg: #eef0f5;
+    --radius: 6px;
+
+    /* shadcn semantic tokens mapped to our design colors */
+    --background: 223 23% 95%;
+    --foreground: 222 38% 12%;
+    --card: 220 33% 98%;
+    --card-foreground: 222 38% 12%;
+    --popover: 220 33% 98%;
+    --popover-foreground: 222 38% 12%;
+    --primary: 230 100% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 90%;
+    --secondary-foreground: 222 38% 12%;
+    --muted-foreground: 223 13% 41%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 4 64% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 21% 86%;
+    --input: 220 21% 86%;
+    --ring: 230 100% 59%;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0c1120;
+      --surface: #131a2c;
+      --ink: #e6e9f2;
+      --muted: #9aa3b8;
+      --line: #263049;
+      --grid: rgba(122, 140, 255, 0.08);
+      --accent: #7d8fff;
+      --accent-ink: #0c1120;
+      --mark: #f5c22e;
+      --mark-ink: #1b1400;
+      --ok: #4cc58a;
+      --err: #ff7a6e;
+      --panel: #060912;
+      --panel-fg: #e6e9f2;
+
+      --background: 223 45% 9%;
+      --foreground: 224 29% 93%;
+      --card: 223 39% 12%;
+      --card-foreground: 224 29% 93%;
+      --popover: 223 39% 12%;
+      --popover-foreground: 224 29% 93%;
+      --primary: 232 100% 75%;
+      --primary-foreground: 223 45% 9%;
+      --secondary: 223 31% 22%;
+      --secondary-foreground: 224 29% 93%;
+      --muted-foreground: 223 16% 66%;
+      --accent-foreground: 223 45% 9%;
+      --destructive: 5 100% 71%;
+      --destructive-foreground: 223 45% 9%;
+      --border: 223 31% 22%;
+      --input: 223 31% 22%;
+      --ring: 232 100% 75%;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"],
+  .dark {
+    --bg: #0c1120;
+    --surface: #131a2c;
+    --ink: #e6e9f2;
+    --muted: #9aa3b8;
+    --line: #263049;
+    --grid: rgba(122, 140, 255, 0.08);
+    --accent: #7d8fff;
+    --accent-ink: #0c1120;
+    --mark: #f5c22e;
+    --mark-ink: #1b1400;
+    --ok: #4cc58a;
+    --err: #ff7a6e;
+    --panel: #060912;
+    --panel-fg: #e6e9f2;
+
+    --background: 223 45% 9%;
+    --foreground: 224 29% 93%;
+    --card: 223 39% 12%;
+    --card-foreground: 224 29% 93%;
+    --popover: 223 39% 12%;
+    --popover-foreground: 224 29% 93%;
+    --primary: 232 100% 75%;
+    --primary-foreground: 223 45% 9%;
+    --secondary: 223 31% 22%;
+    --secondary-foreground: 224 29% 93%;
+    --muted-foreground: 223 16% 66%;
+    --accent-foreground: 223 45% 9%;
+    --destructive: 5 100% 71%;
+    --destructive-foreground: 223 45% 9%;
+    --border: 223 31% 22%;
+    --input: 223 31% 22%;
+    --ring: 232 100% 75%;
+    color-scheme: dark;
+  }
+
+  :root[data-theme="light"] {
+    --bg: #eef0f5;
+    --surface: #f9fafc;
+    --ink: #131a2b;
+    --muted: #5a6276;
+    --line: #d3d8e3;
+    --grid: rgba(43, 76, 255, 0.07);
+    --accent: #2b4cff;
+    --accent-ink: #ffffff;
+    --mark: #f2b705;
+    --mark-ink: #1b1400;
+    --ok: #1d8a54;
+    --err: #c2362b;
+    --panel: #131a2b;
+    --panel-fg: #eef0f5;
+
+    --background: 223 23% 95%;
+    --foreground: 222 38% 12%;
+    --card: 220 33% 98%;
+    --card-foreground: 222 38% 12%;
+    --popover: 220 33% 98%;
+    --popover-foreground: 222 38% 12%;
+    --primary: 230 100% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 90%;
+    --secondary-foreground: 222 38% 12%;
+    --muted-foreground: 223 13% 41%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 4 64% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 21% 86%;
+    --input: 220 21% 86%;
+    --ring: 230 100% 59%;
+    color-scheme: light;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body), "IBM Plex Sans", sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-condensed), "Big Shoulders Display", sans-serif;
+  }
+}

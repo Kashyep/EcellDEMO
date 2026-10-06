@@ -2,81 +2,82 @@
 
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 
 const DynamicScrollTiltedGrid = dynamic(
   () => import("@/components/ui/scroll-tilted-grid").then((mod) => mod.ScrollTiltedGrid || mod.default),
   { ssr: false }
 );
 
+/** Gallery entries. Placeholder art lives in public/img/gallery (see README "Gallery photos"). */
 export const GALLERY_ITEMS = [
   {
     src: "/img/gallery/ideathon.svg",
-    alt: "Campus Ideathon - Real high-resolution photo from campus Ideathon pitch requested",
+    alt: "Campus Ideathon",
     title: "Campus Ideathon",
-    filename: "public/img/gallery/ideathon.svg",
-    requested: "Real photo from campus Ideathon pitch & brainstorming session",
+    description: "Pitching and brainstorming first ideas on campus.",
   },
   {
     src: "/img/gallery/workshop.svg",
-    alt: "Workshops & Labs - Hands-on market research & founder masterclass photo requested",
+    alt: "Workshops & Labs",
     title: "Workshops & Labs",
-    filename: "public/img/gallery/workshop.svg",
-    requested: "Hands-on market research & founder masterclass session photo",
+    description: "Hands-on market research and founder masterclasses.",
   },
   {
     src: "/img/gallery/hackathon.svg",
-    alt: "Campus Hackathon - Student teams building prototypes during weekend hackathon photo requested",
+    alt: "Campus Hackathon",
     title: "Campus Hackathon",
-    filename: "public/img/gallery/hackathon.svg",
-    requested: "Student teams building working prototypes during weekend hackathon",
+    description: "Student teams building working prototypes over a weekend.",
   },
   {
     src: "/img/gallery/esummit-expo.svg",
-    alt: "E-Summit & Expo - Keynote, panel discussion & startup exhibition photo requested",
+    alt: "E-Summit & Expo",
     title: "E-Summit & Expo",
-    filename: "public/img/gallery/esummit-expo.svg",
-    requested: "Keynote, panel discussion & campus startup exhibition photo",
+    description: "Keynotes, panels and a campus startup exhibition.",
   },
 ] as const;
 
-interface ScrollGridWrapperProps {
-  className?: string;
+function PlainGrid({ className }: { className?: string }) {
+  return (
+    <ul className={`grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto px-4 ${className || ""}`}>
+      {GALLERY_ITEMS.map((item) => (
+        <li key={item.src}>
+          <figure className="relative m-0 aspect-[4/3] overflow-hidden rounded-lg border border-border bg-card">
+            <img src={item.src} alt={item.alt} className="h-full w-full object-cover" />
+            <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-5 pb-5 pt-12 text-white">
+              <span className="block text-lg font-semibold leading-tight">{item.title}</span>
+              <span className="mt-1 block text-base leading-snug text-white/85">{item.description}</span>
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
-export function ScrollGridWrapper({ className }: ScrollGridWrapperProps) {
+export function ScrollGridWrapper({ className }: { className?: string }) {
   const [mounted, setMounted] = useState(false);
+  const reduceMotion = useReducedMotionSafe();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const gridImages = GALLERY_ITEMS.map((item) => ({
-    src: item.src,
-    alt: item.alt,
-  }));
-
-  if (!mounted) {
-    return (
-      <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto px-4 ${className || ""}`}>
-        {gridImages.map((img) => (
-          <div key={img.src} className="aspect-[4/3] rounded-lg overflow-hidden border border-border bg-card">
-            <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
-          </div>
-        ))}
-      </div>
-    );
+  if (!mounted || reduceMotion) {
+    return <PlainGrid className={className} />;
   }
 
   return (
     <div className={className}>
       <DynamicScrollTiltedGrid
-        images={gridImages}
+        images={GALLERY_ITEMS}
         smoothScroll={false}
         loop={false}
         aspectRatio="4 / 3"
         sectionPadding="4vh"
-        maxTilt={24}
-        maxBlur={2}
+        perspective={1200}
+        maxTilt={8}
+        maxBlur={0}
       />
     </div>
   );

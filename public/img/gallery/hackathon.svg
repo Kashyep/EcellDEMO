@@ -14,19 +14,9 @@
   <rect x="40" y="40" width="720" height="520" rx="16" stroke="#334155" stroke-width="2" stroke-dasharray="6 6"/>
   
   <!-- Icon: Terminal / Hackathon -->
-  <g transform="translate(360, 160)">
+  <g transform="translate(360, 200)">
     <circle cx="40" cy="40" r="48" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
     <path d="M25 40 L35 48 L25 56" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <line x1="40" y1="56" x2="55" y2="56" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
   </g>
-
-  <!-- Labels -->
-  <rect x="310" y="275" width="180" height="32" rx="16" fill="#d97706" fill-opacity="0.2" stroke="#f59e0b" stroke-width="1.5"/>
-  <text x="400" y="296" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#f59e0b" letter-spacing="1.5">PLACEHOLDER</text>
-  
-  <text x="400" y="360" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="800" fill="#f8fafc" letter-spacing="-0.5">Campus Hackathon</text>
-  <text x="400" y="400" text-anchor="middle" font-family="'IBM Plex Mono', monospace, monospace" font-size="15" fill="#94a3b8">public/img/gallery/hackathon.svg</text>
-  
-  <rect x="180" y="435" width="440" height="42" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-  <text x="400" y="461" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#cbd5e1">Requested: Student teams building prototypes during weekend hackathon</text>
 </svg>

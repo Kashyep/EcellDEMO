@@ -2,6 +2,7 @@
 
 import React from "react";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { DotPattern } from "@/components/ui/dot-pattern";
 
 const TEAM_MEMBERS = [
   { name: "Satvik Gupta", linkedin: "https://www.linkedin.com/in/satvik--gupta/" },
@@ -26,8 +27,9 @@ function getInitials(name: string) {
 
 export function TeamSection() {
   return (
-    <section id="team" className="py-20 sm:py-28 bg-muted/15" aria-labelledby="team-title">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="team" className="relative isolate overflow-hidden py-20 sm:py-28 bg-muted/15" aria-labelledby="team-title">
+      <DotPattern className="-z-10 [mask-image:radial-gradient(ellipse_60%_55%_at_50%_90%,black,transparent)] [-webkit-mask-image:radial-gradient(ellipse_60%_55%_at_50%_90%,black,transparent)]" />
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Section Header */}
         <BlurFade inView>
           <div className="max-w-3xl space-y-4">

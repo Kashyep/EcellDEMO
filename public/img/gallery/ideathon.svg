@@ -14,20 +14,10 @@
   <rect x="40" y="40" width="720" height="520" rx="16" stroke="#334155" stroke-width="2" stroke-dasharray="6 6"/>
   
   <!-- Icon: Lightbulb / Thesis -->
-  <g transform="translate(360, 160)">
+  <g transform="translate(360, 200)">
     <circle cx="40" cy="40" r="48" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
     <path d="M40 22 C29 22 20 31 20 42 C20 50 25 56 28 61 L52 61 C55 56 60 50 60 42 C60 31 51 22 40 22 Z" stroke="#38bdf8" stroke-width="2.5" fill="none"/>
     <line x1="32" y1="67" x2="48" y2="67" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
     <line x1="35" y1="73" x2="45" y2="73" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
   </g>
-
-  <!-- Labels -->
-  <rect x="310" y="275" width="180" height="32" rx="16" fill="#0284c7" fill-opacity="0.2" stroke="#38bdf8" stroke-width="1.5"/>
-  <text x="400" y="296" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#38bdf8" letter-spacing="1.5">PLACEHOLDER</text>
-  
-  <text x="400" y="360" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="800" fill="#f8fafc" letter-spacing="-0.5">Campus Ideathon</text>
-  <text x="400" y="400" text-anchor="middle" font-family="'IBM Plex Mono', monospace, monospace" font-size="15" fill="#94a3b8">public/img/gallery/ideathon.svg</text>
-  
-  <rect x="180" y="435" width="440" height="42" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-  <text x="400" y="461" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#cbd5e1">Requested: Real high-resolution photo from campus Ideathon pitch</text>
 </svg>

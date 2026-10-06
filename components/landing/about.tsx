@@ -2,11 +2,13 @@
 
 import React from "react";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { DotPattern } from "@/components/ui/dot-pattern";
 
 export function AboutSection() {
   return (
-    <section id="about" className="py-20 sm:py-28" aria-labelledby="about-title">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="about" className="relative isolate overflow-hidden py-20 sm:py-28" aria-labelledby="about-title">
+      <DotPattern className="-z-10 [mask-image:radial-gradient(ellipse_60%_55%_at_15%_20%,black,transparent)] [-webkit-mask-image:radial-gradient(ellipse_60%_55%_at_15%_20%,black,transparent)]" />
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Section Header */}
         <BlurFade inView>
           <div className="max-w-3xl space-y-4">

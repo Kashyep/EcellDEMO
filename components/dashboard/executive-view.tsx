@@ -18,6 +18,7 @@ import {
   EmptyDescription,
 } from "@/components/ui/empty";
 import { checkAndCelebrateExecutiveApprovals } from "@/components/dashboard/celebrate";
+import { DashboardPageHeader } from "@/components/dashboard/page-header";
 
 const STATUS_FILTERS = [
   { id: "all", label: "All" },
@@ -90,12 +91,10 @@ export function ExecutiveView() {
 
   return (
     <div className="dash-exec-view">
-      <header style={{ marginBottom: "24px" }}>
-        <h1 className="dash-title">Personal Dashboard</h1>
-        <p className="dash-subtitle">
-          Track and manage your domain tasks, progress, and submissions.
-        </p>
-      </header>
+      <DashboardPageHeader
+        title="Personal Dashboard"
+        subtitle="Track and manage your domain tasks, progress, and submissions."
+      />
 
       {/* Stats Grid */}
       <div className="dash-stats-grid" role="region" aria-label="Task statistics">

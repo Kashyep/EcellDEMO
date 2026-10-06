@@ -4,13 +4,9 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth-provider";
 import { DashboardProvider } from "@/components/dashboard/dashboard-context";
-import {
-  SidebarProvider,
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
-import { CommandPalette } from "@/components/dashboard/command-palette";
+import { CommandPalette, CommandPaletteProvider } from "@/components/dashboard/command-palette";
 import "@/components/dashboard/dashboard.css";
 
 export default function DashboardLayout({
@@ -51,22 +47,17 @@ export default function DashboardLayout({
 
   return (
     <DashboardProvider>
-      <SidebarProvider className="dash-shell motion-reduce:transition-none">
-        <DashboardSidebar />
-        <SidebarInset className="motion-reduce:transition-none">
-          <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger />
-            </div>
-            <div className="flex items-center gap-2">
-              <CommandPalette />
-            </div>
-          </header>
-          <main className="dash-main" id="main-content" tabIndex={-1}>
-            <div className="dash-container">{children}</div>
-          </main>
-        </SidebarInset>
-      </SidebarProvider>
+      <CommandPaletteProvider>
+        <SidebarProvider className="dash-shell motion-reduce:transition-none">
+          <DashboardSidebar />
+          <SidebarInset className="bg-transparent motion-reduce:transition-none">
+            <main className="dash-main" id="main-content" tabIndex={-1}>
+              <div className="dash-container">{children}</div>
+            </main>
+          </SidebarInset>
+        </SidebarProvider>
+        <CommandPalette />
+      </CommandPaletteProvider>
     </DashboardProvider>
   );
 }

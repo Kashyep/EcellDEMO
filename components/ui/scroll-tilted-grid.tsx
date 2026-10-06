@@ -14,6 +14,9 @@ import {
 export interface ScrollTiltedGridImage {
   src: string;
   alt: string;
+  /** Optional readable caption rendered on a scrim over the bottom of the tile. */
+  title?: string;
+  description?: string;
 }
 
 export interface ScrollTiltedGridProps {
@@ -78,15 +81,17 @@ function GalleryTile({
       const distance = Math.abs(position - 0.5) * 2;
       const signed = (position - 0.5) * 2;
       const eased = distance * distance * (3 - 2 * distance);
+      // Roll, skew and dimming scale with maxTilt so a low tilt keeps tiles readable.
+      const strength = maxTilt / 62;
       const x = side * eased * 18;
       const y = -signed * eased * 24;
       const tilt = -signed * maxTilt;
-      const roll = side * signed * 3;
-      const skew = -side * signed * 7;
+      const roll = side * signed * 3 * strength;
+      const skew = -side * signed * 7 * strength;
 
       tile.style.setProperty("--tile-blur", `${eased * maxBlur}px`);
-      tile.style.setProperty("--tile-brightness", String(1 - eased * 0.5));
-      tile.style.setProperty("--tile-saturation", String(1 - eased * 0.5));
+      tile.style.setProperty("--tile-brightness", String(1 - eased * 0.5 * strength));
+      tile.style.setProperty("--tile-saturation", String(1 - eased * 0.5 * strength));
       tile.style.setProperty("--tile-image-scale", String(1.03 + eased * 0.15));
       tile.style.setProperty(
         "--tile-transform",
@@ -147,6 +152,14 @@ function GalleryTile({
           draggable={false}
         />
         <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-black/10" />
+        {image.title ? (
+          <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-3 pb-3 pt-10 text-white sm:px-5 sm:pb-5 sm:pt-12">
+            <span className="block text-base font-semibold leading-tight sm:text-lg">{image.title}</span>
+            {image.description ? (
+              <span className="mt-1 hidden text-base leading-snug text-white/85 sm:block">{image.description}</span>
+            ) : null}
+          </figcaption>
+        ) : null}
       </div>
     </figure>
   );

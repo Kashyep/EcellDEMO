@@ -73,8 +73,18 @@ let client: SupabaseClient | null = null;
 export function sb(): SupabaseClient {
   if (client) return client;
 
-  const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").trim().replace(/\/+$/, "");
-  const key = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "").trim();
+  const url = (
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    process.env.SUPABASE_URL ||
+    "https://kovebqhqibixpdlwgqlr.supabase.co"
+  ).trim().replace(/\/+$/, "");
+
+  const key = (
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_PUBLISHABLE_KEY ||
+    "sb_publishable_WWM_JYb8fra9QPoLiUSBjg_xpI75EM-"
+  ).trim();
 
   if (!url || !key) {
     throw new Error("Sign-in isn't set up on this copy of the site yet. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");

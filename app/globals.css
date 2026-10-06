@@ -236,3 +236,64 @@
 :root[data-magicui-theme-vt="active"]::view-transition-new(root) {
   clip-path: var(--magicui-theme-vt-clip-from);
 }
+
+/* Cinematic footer (components/ui/motion-footer.tsx); HSL tokens, theme-adaptive */
+@layer components {
+  .cinematic-footer {
+    -webkit-font-smoothing: antialiased;
+    perspective: 800px;
+  }
+  .cinematic-footer-grid {
+    background-size: 60px 60px;
+    background-image:
+      linear-gradient(to right, hsl(var(--foreground) / 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground) / 0.04) 1px, transparent 1px);
+    mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+  }
+  .cinematic-footer-aurora {
+    background: radial-gradient(
+      circle at 50% 50%,
+      hsl(var(--accent-hsl) / 0.2) 0%,
+      hsl(var(--chart-2) / 0.12) 40%,
+      transparent 70%
+    );
+  }
+  .cinematic-footer-pill {
+    background: linear-gradient(145deg, hsl(var(--foreground) / 0.04) 0%, hsl(var(--foreground) / 0.015) 100%);
+    border: 1px solid hsl(var(--foreground) / 0.1);
+    box-shadow:
+      0 10px 30px -10px hsl(var(--background) / 0.5),
+      inset 0 1px 1px hsl(var(--foreground) / 0.1),
+      inset 0 -1px 2px hsl(var(--background) / 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: background 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cinematic-footer-pill:hover {
+    background: linear-gradient(145deg, hsl(var(--foreground) / 0.08) 0%, hsl(var(--foreground) / 0.02) 100%);
+    border-color: hsl(var(--foreground) / 0.22);
+    box-shadow:
+      0 20px 40px -10px hsl(var(--background) / 0.7),
+      inset 0 1px 1px hsl(var(--foreground) / 0.2);
+    color: hsl(var(--foreground));
+  }
+  .cinematic-footer-giant {
+    font-size: 26vw;
+    line-height: 0.75;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: transparent;
+    -webkit-text-stroke: 1px hsl(var(--foreground) / 0.08);
+    background: linear-gradient(180deg, hsl(var(--foreground) / 0.12) 0%, transparent 60%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .cinematic-footer-glow {
+    background: linear-gradient(180deg, hsl(var(--foreground)) 0%, hsl(var(--foreground) / 0.55) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}

@@ -109,10 +109,26 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "footer-breathe": {
+          "0%": { transform: "translate(-50%, -50%) scale(1)", opacity: "0.6" },
+          "100%": { transform: "translate(-50%, -50%) scale(1.1)", opacity: "1" },
+        },
+        "footer-marquee": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        "footer-heartbeat": {
+          "0%, 100%": { transform: "scale(1)" },
+          "15%, 45%": { transform: "scale(1.2)" },
+          "30%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "footer-breathe": "footer-breathe 8s ease-in-out infinite alternate",
+        "footer-marquee": "footer-marquee 40s linear infinite",
+        "footer-heartbeat": "footer-heartbeat 2s cubic-bezier(0.25, 1, 0.5, 1) infinite",
       },
       ringWidth: {
         3: "3px",

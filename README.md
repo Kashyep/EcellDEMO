@@ -10,8 +10,29 @@ A full-stack redesign and operational platform built for the **Entrepreneurship 
 
 ---
 
+## 🌐 Live Hosted URL
+
+👉 **[https://ecelldemo.vercel.app](https://ecelldemo.vercel.app)**
+
+---
+
+## 🔑 Demo Test Accounts (For Interviewers & Reviewers)
+
+To test the role-based dashboards and domain management without creating a new account:
+
+| Role | Email | Password | Primary Capabilities to Test |
+|---|---|---|---|
+| **Domain Head (Tech)** | `head.tech@ecellsmvit.in` | `Password123!` | **Search & Add members by name**, roster management, assign tasks, review all queues, team analytics |
+| **Co-Head (Tech)** | `cohead.tech@ecellsmvit.in` | `Password123!` | Review executive submissions with notes, assign tasks, executive performance metrics |
+| **Executive (Tech)** | `exec.tech@ecellsmvit.in` | `Password123!` | Start assigned tasks (`todo` → `in_progress`), submit deliverables with secure `https://` links |
+
+> **💡 Reviewer Tip:** Open two different browser profiles or an incognito window to test real-time collaboration — submit a deliverable as an **Executive** and immediately approve it or request changes as a **Co-Head** or **Head**!
+
+---
+
 ## 📑 Table of Contents
 
+- [Live Deployment & Demo Accounts](#-live-hosted-url)
 - [Key Technical Highlights](#-key-technical-highlights)
 - [System Architecture](#-system-architecture)
 - [Role Hierarchy & Access Control](#-role-hierarchy--access-control)

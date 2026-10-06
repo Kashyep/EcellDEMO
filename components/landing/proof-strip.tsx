@@ -11,7 +11,7 @@ export function ProofStrip() {
           {/* Metric 1: Re-established */}
           <div className="space-y-1">
             <div className="text-3xl sm:text-4xl font-heading font-black tracking-tight text-foreground flex items-center justify-center gap-1">
-              <Num value={2021} className="text-2xl sm:text-3xl" />
+              <Num value={2021} animate="count" grouping={false} className="text-2xl sm:text-3xl" />
             </div>
             <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono">
               Re-established
@@ -21,7 +21,7 @@ export function ProofStrip() {
           {/* Metric 2: NEC, IIT Bombay */}
           <div className="space-y-1">
             <div className="text-3xl sm:text-4xl font-heading font-black tracking-tight text-foreground flex items-center justify-center">
-              <Num value={16} className="text-2xl sm:text-3xl" />
+              <Num value={16} animate="count" className="text-2xl sm:text-3xl" />
               <span className="text-xl sm:text-2xl font-bold ml-0.5">th</span>
             </div>
             <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono">
@@ -32,7 +32,7 @@ export function ProofStrip() {
           {/* Metric 3: IIT National stages */}
           <div className="space-y-1">
             <div className="text-3xl sm:text-4xl font-heading font-black tracking-tight text-foreground flex items-center justify-center">
-              <Num value={2} className="text-2xl sm:text-3xl" />
+              <Num value={2} animate="count" className="text-2xl sm:text-3xl" />
             </div>
             <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono">
               IIT National Stages
@@ -42,7 +42,7 @@ export function ProofStrip() {
           {/* Metric 4: Core team members */}
           <div className="space-y-1">
             <div className="text-3xl sm:text-4xl font-heading font-black tracking-tight text-foreground flex items-center justify-center">
-              <Num value={10} className="text-2xl sm:text-3xl" />
+              <Num value={10} animate="count" className="text-2xl sm:text-3xl" />
             </div>
             <p className="text-xs uppercase tracking-wider text-muted-foreground font-mono">
               Core Team Members

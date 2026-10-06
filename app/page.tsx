@@ -1,4 +1,5 @@
 import React from "react";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { LandingHeader } from "@/components/landing/header";
 import { LandingHero } from "@/components/landing/hero";
 import { ProofStrip } from "@/components/landing/proof-strip";
@@ -17,6 +18,7 @@ export const metadata = {
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">
+      <ScrollProgress />
       <LandingHeader />
 
       <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">

@@ -338,6 +338,32 @@ BEGIN
   SELECT count(*) INTO v_found_count FROM public.find_member('exec.mkt@ecellsmvit.in');
   CALL test_helpers.assert_true(22, 'Already assigned member is not returned by find_member', v_found_count = 0);
 
+  -- Head searches for eligible unassigned member by full name
+  SELECT count(*) INTO v_found_count FROM public.find_member('New Candidate');
+  CALL test_helpers.assert_true(23, 'Head successfully finds eligible unassigned member by full name', v_found_count = 1);
+
+  -- Head searches for eligible unassigned member by partial name (case-insensitive)
+  SELECT count(*) INTO v_found_count FROM public.find_member('candidate');
+  CALL test_helpers.assert_true(24, 'Head successfully finds eligible unassigned member by partial lowercase name', v_found_count >= 1);
+
+  -- Head searches for eligible unassigned member by first name
+  SELECT count(*) INTO v_found_count FROM public.find_member('New');
+  CALL test_helpers.assert_true(25, 'Head successfully finds eligible unassigned member by first name', v_found_count = 1);
+
+  -- Head calls get_unassigned_members -> returns eligible unassigned candidate
+  SELECT count(*) INTO v_found_count FROM public.get_unassigned_members(10);
+  CALL test_helpers.assert_true(26, 'Head successfully retrieves unassigned members list', v_found_count >= 1);
+
+  -- Non-head calling get_unassigned_members -> rejected
+  CALL test_helpers.authenticate_as('33333333-3333-3333-3333-333333333333');
+  v_err := false;
+  BEGIN
+    PERFORM * FROM public.get_unassigned_members(10);
+  EXCEPTION WHEN OTHERS THEN
+    v_err := true;
+  END;
+  CALL test_helpers.assert_true(27, 'Non-head calling get_unassigned_members is rejected', v_err);
+
   CALL test_helpers.authenticate_as(null);
 END $$;
 

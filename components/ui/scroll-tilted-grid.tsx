@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 import ReactLenis from "lenis/react";
 import {
   type CSSProperties,
@@ -19,8 +19,10 @@ export interface ScrollTiltedGridImage {
   description?: string;
 }
 
-export interface ScrollTiltedGridProps {
-  images: readonly ScrollTiltedGridImage[];
+export interface ScrollTiltedGridProps<T = ScrollTiltedGridImage> {
+  images?: readonly T[];
+  items?: readonly T[];
+  renderCard?: (item: T, index: number) => React.ReactNode;
   loop?: boolean;
   initialCycles?: number;
   maxCycles?: number;
@@ -46,8 +48,8 @@ function clamp(value: number, minimum = 0, maximum = 1) {
   return Math.min(maximum, Math.max(minimum, value));
 }
 
-function GalleryTile({
-  image,
+function GalleryTile<T>({
+  item,
   index,
   aspectRatio,
   perspective,
@@ -55,8 +57,9 @@ function GalleryTile({
   maxBlur,
   rounded,
   reduceMotion,
+  renderCard,
 }: {
-  image: ScrollTiltedGridImage;
+  item: T;
   index: number;
   aspectRatio: string;
   perspective: number;
@@ -64,8 +67,9 @@ function GalleryTile({
   maxBlur: number;
   rounded: string;
   reduceMotion: boolean;
+  renderCard?: (item: T, index: number) => React.ReactNode;
 }) {
-  const tileRef = useRef<HTMLElement>(null);
+  const tileRef = useRef<HTMLDivElement>(null);
   const side = index % 2 === 0 ? -1 : 1;
 
   useEffect(() => {
@@ -81,10 +85,11 @@ function GalleryTile({
       const distance = Math.abs(position - 0.5) * 2;
       const signed = (position - 0.5) * 2;
       const eased = distance * distance * (3 - 2 * distance);
-      // Roll, skew and dimming scale with maxTilt so a low tilt keeps tiles readable.
+      // Translation, depth, roll, skew and dimming scale with maxTilt so a low tilt keeps tiles readable and within bounds.
       const strength = maxTilt / 62;
-      const x = side * eased * 18;
-      const y = -signed * eased * 24;
+      const x = side * eased * 18 * strength;
+      const y = -signed * eased * 24 * strength;
+      const z = eased * 180 * strength;
       const tilt = -signed * maxTilt;
       const roll = side * signed * 3 * strength;
       const skew = -side * signed * 7 * strength;
@@ -95,7 +100,7 @@ function GalleryTile({
       tile.style.setProperty("--tile-image-scale", String(1.03 + eased * 0.15));
       tile.style.setProperty(
         "--tile-transform",
-        `translate3d(${x}%, ${y}%, ${eased * 180}px) rotateX(${tilt}deg) rotateZ(${roll}deg) skewX(${skew}deg)`,
+        `translate3d(${x}%, ${y}%, ${z}px) rotateX(${tilt}deg) rotateZ(${roll}deg) skewX(${skew}deg)`,
       );
     };
     const schedule = () => {
@@ -127,10 +132,35 @@ function GalleryTile({
     "--tile-image-scale": 1.03,
   };
 
+  // If a custom renderCard slot is provided, render inside transformed tile container
+  // without nested figure/figcaption invalid markup.
+  if (renderCard) {
+    return (
+      <div
+        ref={tileRef}
+        className={cn("m-0 w-full", side > 0 && "sm:pt-24")}
+        style={variables}
+      >
+        <div
+          className={cn(
+            "relative w-full overflow-hidden border border-black/10 bg-neutral-200 shadow-[0_24px_80px_rgba(20,18,14,0.16)] dark:border-white/10 dark:bg-neutral-900 dark:shadow-[0_24px_90px_rgba(0,0,0,0.45)]",
+            !reduceMotion &&
+              "[filter:blur(var(--tile-blur))_brightness(var(--tile-brightness))_saturate(var(--tile-saturation))] [transform:var(--tile-transform)] [transform-style:preserve-3d]",
+          )}
+          style={{ aspectRatio, borderRadius: rounded }}
+        >
+          {renderCard(item, index)}
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback default image rendering
+  const legacyImage = item as unknown as ScrollTiltedGridImage;
   return (
     <figure
-      ref={tileRef}
-      className={cn("m-0", side > 0 && "pt-12 sm:pt-24")}
+      ref={tileRef as unknown as React.RefObject<HTMLElement>}
+      className={cn("m-0 w-full", side > 0 && "sm:pt-24")}
       style={variables}
     >
       <div
@@ -142,8 +172,8 @@ function GalleryTile({
         style={{ aspectRatio, borderRadius: rounded }}
       >
         <img
-          src={image.src}
-          alt={image.alt}
+          src={legacyImage.src}
+          alt={legacyImage.alt}
           className={cn(
             "h-full w-full object-cover",
             !reduceMotion && "[transform:scale(var(--tile-image-scale))]",
@@ -152,11 +182,15 @@ function GalleryTile({
           draggable={false}
         />
         <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-black/10" />
-        {image.title ? (
+        {legacyImage.title ? (
           <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-3 pb-3 pt-10 text-white sm:px-5 sm:pb-5 sm:pt-12">
-            <span className="block text-base font-semibold leading-tight sm:text-lg">{image.title}</span>
-            {image.description ? (
-              <span className="mt-1 hidden text-base leading-snug text-white/85 sm:block">{image.description}</span>
+            <span className="block text-base font-semibold leading-tight sm:text-lg">
+              {legacyImage.title}
+            </span>
+            {legacyImage.description ? (
+              <span className="mt-1 hidden text-base leading-snug text-white/85 sm:block">
+                {legacyImage.description}
+              </span>
             ) : null}
           </figcaption>
         ) : null}
@@ -165,21 +199,24 @@ function GalleryTile({
   );
 }
 
-export function ScrollTiltedGrid({
+export function ScrollTiltedGrid<T = ScrollTiltedGridImage>({
   images,
+  items,
+  renderCard,
   loop = false,
   initialCycles = 2,
   maxCycles = 4,
-  smoothScroll = true,
+  smoothScroll = false,
   aspectRatio = "4 / 5",
-  perspective = 1000,
-  maxTilt = 62,
-  maxBlur = 7,
-  rounded = "0.25rem",
-  sectionPadding = "18vh",
+  perspective = 1200,
+  maxTilt = 8,
+  maxBlur = 0,
+  rounded = "0.75rem",
+  sectionPadding = "4vh",
   className,
-}: ScrollTiltedGridProps) {
-  const reduceMotion = useReducedMotion() ?? false;
+}: ScrollTiltedGridProps<T>) {
+  const reduceMotion = useReducedMotionSafe();
+  const rawItems = (items ?? images ?? []) as readonly T[];
   const cycleLimit = Math.max(1, maxCycles);
   const [cycleCount, setCycleCount] = useState(() =>
     clamp(initialCycles, 1, cycleLimit),
@@ -204,24 +241,71 @@ export function ScrollTiltedGrid({
   const tiles = useMemo(
     () =>
       Array.from({ length: loop ? cycleCount : 1 }, (_, cycle) =>
-        images.map((image, index) => ({ cycle, image, index })),
+        rawItems.map((item, index) => ({ cycle, item, index })),
       ).flat(),
-    [cycleCount, images, loop],
+    [cycleCount, rawItems, loop],
   );
+
+  if (reduceMotion) {
+    return (
+      <div
+        className={cn(
+          "mx-auto grid w-full max-w-6xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4",
+          className
+        )}
+      >
+        {rawItems.map((item, index) =>
+          renderCard ? (
+            <div
+              key={index}
+              className="w-full overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm"
+              style={{ aspectRatio, borderRadius: rounded }}
+            >
+              {renderCard(item, index)}
+            </div>
+          ) : (
+            <figure
+              key={index}
+              className="relative m-0 w-full overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+              style={{ aspectRatio, borderRadius: rounded }}
+            >
+              <img
+                src={(item as unknown as ScrollTiltedGridImage).src}
+                alt={(item as unknown as ScrollTiltedGridImage).alt}
+                className="h-full w-full object-cover"
+              />
+              {(item as unknown as ScrollTiltedGridImage).title ? (
+                <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent px-4 pb-4 pt-10 text-white">
+                  <span className="block text-base font-semibold leading-tight">
+                    {(item as unknown as ScrollTiltedGridImage).title}
+                  </span>
+                  {(item as unknown as ScrollTiltedGridImage).description ? (
+                    <span className="mt-1 block text-sm leading-snug text-white/85">
+                      {(item as unknown as ScrollTiltedGridImage).description}
+                    </span>
+                  ) : null}
+                </figcaption>
+              ) : null}
+            </figure>
+          )
+        )}
+      </div>
+    );
+  }
 
   const gallery = (
     <section
       className={cn("relative w-full overflow-hidden", className)}
-      aria-label="Scroll-reactive image gallery"
+      aria-label="Campus Moments Gallery"
     >
       <div
-        className="mx-auto grid w-full max-w-5xl grid-cols-2 items-start gap-x-4 gap-y-16 px-4 sm:gap-x-10 sm:gap-y-28 sm:px-10 lg:gap-x-16"
+        className="mx-auto grid w-full max-w-5xl grid-cols-1 sm:grid-cols-2 items-start gap-x-6 gap-y-12 px-4 sm:gap-x-10 sm:gap-y-24 sm:px-8 lg:gap-x-16"
         style={{ paddingBlock: sectionPadding }}
       >
-        {tiles.map(({ cycle, image, index }) => (
+        {tiles.map(({ cycle, item, index }) => (
           <GalleryTile
-            key={`${cycle}-${index}-${image.src}`}
-            image={image}
+            key={`${cycle}-${index}`}
+            item={item}
             index={index}
             aspectRatio={aspectRatio}
             perspective={perspective}
@@ -229,6 +313,7 @@ export function ScrollTiltedGrid({
             maxBlur={maxBlur}
             rounded={rounded}
             reduceMotion={reduceMotion}
+            renderCard={renderCard}
           />
         ))}
       </div>

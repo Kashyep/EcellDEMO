@@ -1,10 +1,11 @@
-"use client";
-
 import React from "react";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { ScrollGridWrapper } from "@/components/landing/scroll-grid-wrapper";
+import { getGalleryItems } from "@/lib/gallery.server";
 
 export function GallerySection() {
+  const items = getGalleryItems();
+
   return (
     <section id="gallery" className="py-20 sm:py-28" aria-labelledby="gallery-title">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -27,7 +28,7 @@ export function GallerySection() {
         </BlurFade>
 
         <div className="relative pt-4">
-          <ScrollGridWrapper />
+          <ScrollGridWrapper initialItems={items} />
         </div>
       </div>
     </section>

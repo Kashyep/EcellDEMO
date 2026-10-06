@@ -3,21 +3,23 @@
 import React, { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
+import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 
 const DynamicDitheredLogo = dynamic(
   () => import("@/components/ui/dithered-logo").then((mod) => mod.DitheredLogo || mod.default),
   { ssr: false }
 );
 
-interface DitheredLogoWrapperProps {
+export interface DitheredLogoWrapperProps {
   className?: string;
+  decorative?: boolean;
 }
 
-export function DitheredLogoWrapper({ className }: DitheredLogoWrapperProps) {
+export function DitheredLogoWrapper({ className, decorative = false }: DitheredLogoWrapperProps) {
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [hasCanvasSupport, setHasCanvasSupport] = useState(true);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const prefersReducedMotion = useReducedMotionSafe();
   const [canvasReady, setCanvasReady] = useState(false);
 
   const handleReady = useCallback(() => {
@@ -30,12 +32,6 @@ export function DitheredLogoWrapper({ className }: DitheredLogoWrapperProps) {
 
   useEffect(() => {
     setMounted(true);
-
-    // Check prefers-reduced-motion
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(motionQuery.matches);
-    const motionListener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    motionQuery.addEventListener("change", motionListener);
 
     // Safe canvas 2D capability check
     try {
@@ -69,7 +65,6 @@ export function DitheredLogoWrapper({ className }: DitheredLogoWrapperProps) {
     });
 
     return () => {
-      motionQuery.removeEventListener("change", motionListener);
       themeObserver.disconnect();
     };
   }, []);
@@ -85,49 +80,44 @@ export function DitheredLogoWrapper({ className }: DitheredLogoWrapperProps) {
         "absolute inset-0 flex items-center justify-center transition-opacity duration-300",
         canvasReady ? "opacity-0 pointer-events-none" : "opacity-100"
       )}
-      aria-hidden={canvasReady}
+      aria-hidden={decorative || canvasReady}
     >
       <img
         src={imageSrc}
-        alt="E-Cell SMVIT logo"
-        width={180}
-        height={180}
-        className="w-36 h-36 sm:w-44 sm:h-44 object-contain opacity-95 select-none pointer-events-none"
+        alt={decorative ? "" : "E-Cell SMVIT logo"}
+        className="w-full h-full object-contain select-none pointer-events-none"
         loading="eager"
       />
     </div>
   );
 
+  const containerClasses = cn(
+    "relative flex items-center justify-center pointer-events-none select-none",
+    className || "w-48 h-48 sm:w-56 sm:h-56"
+  );
+
   if (!mounted || prefersReducedMotion || !hasCanvasSupport) {
     return (
       <div
-        className={cn(
-          "relative flex items-center justify-center w-48 h-48 sm:w-56 sm:h-56 pointer-events-none select-none",
-          className
-        )}
-        aria-label="E-Cell SMVIT logo"
+        className={containerClasses}
+        aria-hidden={decorative ? "true" : undefined}
+        aria-label={decorative ? undefined : "E-Cell SMVIT logo"}
       >
-        <div className="relative flex items-center justify-center w-48 h-48 sm:w-56 sm:h-56">
-          <img
-            src={imageSrc}
-            alt="E-Cell SMVIT logo"
-            width={180}
-            height={180}
-            className="w-36 h-36 sm:w-44 sm:h-44 object-contain opacity-95 select-none pointer-events-none"
-            loading="eager"
-          />
-        </div>
+        <img
+          src={imageSrc}
+          alt={decorative ? "" : "E-Cell SMVIT logo"}
+          className="w-full h-full object-contain select-none pointer-events-none"
+          loading="eager"
+        />
       </div>
     );
   }
 
   return (
     <div
-      className={cn(
-        "relative flex items-center justify-center w-48 h-48 sm:w-56 sm:h-56 pointer-events-none select-none",
-        className
-      )}
-      aria-label="E-Cell SMVIT interactive logo"
+      className={containerClasses}
+      aria-hidden={decorative ? "true" : undefined}
+      aria-label={decorative ? undefined : "E-Cell SMVIT interactive logo"}
     >
       {fallbackImg}
       <div
@@ -141,10 +131,10 @@ export function DitheredLogoWrapper({ className }: DitheredLogoWrapperProps) {
           invert={invert}
           particleColor={particleColor}
           scale={0.88}
-          gridSize={56}
+          gridSize={64}
           onReady={handleReady}
           onError={handleError}
-          className="pointer-events-none w-48 h-48 sm:w-56 sm:h-56"
+          className="pointer-events-none w-full h-full"
         />
       </div>
     </div>
